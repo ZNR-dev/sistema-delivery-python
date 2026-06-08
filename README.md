@@ -4,11 +4,14 @@ Sistema de gestión de delivery desarrollado en Python que permite registrar y a
 # Sistema de Delivery en Python
 
 ## Integrantes
-- Nombre 1
-- Nombre 2
+- Eiden, Aldana Yasmin
+- Halier, Fiorella Estefania
+- Gonzalez, Maria Teresa
+- Ramirez, Zahira Nahir
+- Sosa, Tomas
 
 ## Comisión
-XXX
+1.4
 
 ## Descripción
 Este sistema permite gestionar pedidos de un servicio de delivery, incluyendo registro de pedidos, cálculo de importes y control de estados.
