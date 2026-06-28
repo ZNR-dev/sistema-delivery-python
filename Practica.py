@@ -22,7 +22,29 @@ def menu_sistema():
     opcion = input("seleccione una opcion (1-4):").strip()
 
     if opcion == "1":
-        print("proximamente la logica para registrar los pedidos")
+        print("\nRegistrando pedido....")
+        print("- - - - - - - - - - - - - - - - - - - - - -")
+        cliente = input("\nNombre del cliente: ").strip()
+        print("- - - - - - - - - - - - - - - - - - - - - -")
+        productos_pedidos = []
+        while True:
+            nombre_prod = input("\nNombre del producto: ").strip()
+            try:
+                precio_prod = float(input(f"Precio de '{nombre_prod}':$"))
+                productos_pedidos.append({"nombre":nombre_prod,"precio":precio_prod})
+            except ValueError:
+                print("Error:Precio invalido. Producto no Agregado")
+                continue
+            print("\n¿Desea seguir agregando productos a su lista")
+            print("1. Sí, deseo seguir agregando")
+            print("2.No, Finalizar carga de productos")
+            
+            bucle_prod = input("Seleccione una opcion (1 o 2): ").strip()
+            if bucle_prod != "1":
+                break
+                
+            
+            
     elif opcion == "2":
         ver_pedidos()
     elif opcion == "3":
