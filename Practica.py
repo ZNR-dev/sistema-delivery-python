@@ -1,6 +1,8 @@
 pedidos= {} #Estructura :{id_pedido:{datos_dict}}
 contador_id_pedido=1
 historial_clientes= {} #Estructura:{ "NombreCliente":cantidad_compras } 
+from datetime import date
+fecha_actual = date.today()
 
 def ver_pedidos():
     if not pedidos:
@@ -23,8 +25,11 @@ def menu_sistema():
 
     if opcion == "1":
         print("\nRegistrando pedido....")
+
+        fecha_dia = fecha_actual.strftime("%d/%m/%y")
+        print("\nFecha:", fecha_dia)
         print("- - - - - - - - - - - - - - - - - - - - - -")
-        cliente = input("\nNombre del cliente: ").strip()
+        cliente = input("Nombre del cliente: ").strip()
         print("- - - - - - - - - - - - - - - - - - - - - -")
         productos_pedidos = []
         while True:
