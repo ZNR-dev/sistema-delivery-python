@@ -13,6 +13,25 @@ zonas_opciones = {
     "4": "Puerto Vilelas"
 }
 #diccionario de los precios segun la zona
+cuotas={
+    "1":0.0,
+    "2":0.050,
+    "3":0.076,
+    "4":0.10,
+    "5":0.124,
+    "6":0.155,
+    "7":0.1821,
+    "8":0.207,
+    "9":0.226,
+    "10":0.258,
+    "11":0.280,
+    "12":0.300
+}
+forma_pago={
+    "1":0,
+    "2":0,
+    "3":0
+}
 tabla_zonas = {
     "Resistencia": 1000.0,
     "Barranqueras": 2000.0,
@@ -59,7 +78,7 @@ def menu_sistema():
         productos_texto=""
         
         while True:
-            nombre_prod = input("\nNombre del producto (o '0' para terminar'): ").strip()
+            nombre_prod = input("Nombre del producto (o '0' para terminar'): ").strip()
             if nombre_prod.lower() == '0':
                 break
             try:
@@ -94,10 +113,8 @@ def menu_sistema():
         costo_envio=0.0 if es_frecuente else tabla_zonas[zona_elegida]
 
         total_final=subtotal+costo_envio
-        fecha_dia=fecha_actual.strftime("%d/%m/%y")
-        print(f"\nTICKET                                     N°:{contador_id_pedido}")
-        print("Fecha                                  ",fecha_dia) 
-        print("             Sistema Delivery                    ")
+     
+        print(f"\nN°:{contador_id_pedido}")
         print("-------------------------------------------------")  
         print(f"Cliente:{cliente}")
         print(f"productos:{productos_texto}")
@@ -110,9 +127,26 @@ def menu_sistema():
         if input("seleccione (1-2):").strip()=="1":
             if es_frecuente:
                 historial_clientes[cliente]=0
+            
+            print("\n¿Como desea pagar?\n1.tarjeta de credito\n2.tarjeta de debito\n3.efectivo")
+            f_pago=input("seleccione una opcion (1-3):").strip()
 
-            print(f"\n¡PEDIDO #{contador_id_pedido} REGISTRADO!")
-            contador_id_pedido+=1
+            if f_pago in forma_pago:
+                forma_pago[f_pago]+=1
+                if f_pago!="3":
+                    print("\n¿En cuantas cuotas desea pagar?")
+                    cuo=input("ingrese la cantidad de cuotas (1-12):").strip()
+                    if cuo in cuotas:
+                        total_final=total_final+(total_final)*cuotas[cuo]
+                        print(f"\n¡PEDIDO #{contador_id_pedido} REGISTRADO!")
+                        print(f"\n Total a pagar ${total_final:.2f} en",cuo,"cuotas")
+                        contador_id_pedido+=1
+                    else:
+                        print("Error!,la cantidad de cuotas se excedio el tope(1-12)")
+
+            else:
+                print("Error!, su eleccion no esta dentro de las opciones")
+
         else:
             historial_clientes[cliente]-=1
               
