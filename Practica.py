@@ -1,18 +1,17 @@
 from datetime import date
 
-# Variables globales para almacenar la información del sistema
-pedidos = {}  # Estructura: {id_pedido: {datos_dict}}
+pedidos = {}  
 contador_id_pedido = 1
-historial_clientes = {}  # Estructura: {"NombreCliente": cantidad_compras} 
-fecha_actual = date.today() #para mostrar la fecha del dia
-#diccionario para las zonas que estan permitidas
+historial_clientes = {}  
+fecha_actual = date.today() 
+
 zonas_opciones = {
     "1": "Resistencia",
     "2": "Barranqueras",
     "3": "Fontana",
     "4": "Puerto Vilelas"
 }
-#diccionario de los precios segun la zona
+
 cuotas={
     "1":0.0,
     "2":0.050,
@@ -27,11 +26,13 @@ cuotas={
     "11":0.280,
     "12":0.300
 }
+
 forma_pago={
     "1":0,
     "2":0,
     "3":0
 }
+
 tabla_zonas = {
     "Resistencia": 1000.0,
     "Barranqueras": 2000.0,
@@ -40,23 +41,20 @@ tabla_zonas = {
 }
 
 def ver_pedidos():
-    # Validación por si el diccionario de pedidos está vacío
     if not pedidos:
         print("\n[Info] No hay pedidos registrados.")
         return
         
     print("\n  Reporte de operaciones:")
-    # Recorremos el diccionario de pedidos usando su clave (id) y valor (datos)
     for id_p, p in pedidos.items():
-        fecha_dia = fecha_actual.strftime("%d/%m/%y")
-        print("\nFecha:", fecha_dia) 
         print(f"ID: {id_p} | Cliente: {p['cliente']} | Fecha: {p['fecha']} | Zona: {p['zona']}")
         print(f"Productos: {p['productos_texto']}")
+        if p["regalo"] != "Ninguno":
+            print(f"Premio Mundial: {p['regalo']}")
         print(f"Total: ${p['total']:.2f}")
         print("-" * 30)
 
 def menu_sistema():
-    # Se declara global para poder modificar el contador de IDs desde esta función
     global contador_id_pedido 
     global pedidos 
     
@@ -71,7 +69,6 @@ def menu_sistema():
     if opcion == "1":
         print("\nRegistrando pedido....")
 
-      
         cliente = input("\nNombre del cliente: ").strip().capitalize()
         
         subtotal=0.0
@@ -84,7 +81,6 @@ def menu_sistema():
             try:
                 precio_prod = float(input(f"Precio de '{nombre_prod}': $"))
                 subtotal+=precio_prod
-                # Guardamos el producto actual en la lista y sumamos su valor al total
                 if productos_texto == "":
                     productos_texto=nombre_prod
                 else:
@@ -97,7 +93,7 @@ def menu_sistema():
             print("operacion cancelada:no se agregaron productos.")
             return
 
-        print("\nZonas\n1.Resistencia\n2.Barranqueras\n3.Fontana\n4.Puerto Vilelas"),
+        print("\nZonas\n1.Resistencia\n2.Barranqueras\n3.Fontana\n4.Puerto Vilelas")
         z_op=input("seleccione zona(1-4):").strip()
 
         if z_op in zonas_opciones:
@@ -113,13 +109,38 @@ def menu_sistema():
         costo_envio=0.0 if es_frecuente else tabla_zonas[zona_elegida]
 
         total_final=subtotal+costo_envio
+
+        # Se agrego fechas de promo y evento especial
+        descuento_promo = 0.0
+        print("\n¿Que dia de la semana es hoy?")
+        print("1. Lunes\n2. Martes\n3. Miercoles\n4. Jueves\n5. Viernes\n6. Sabado\n7. Domingo")
+        dia_opc = input("Seleccione una opcion (1-7): ").strip()
+        if dia_opc == "4":
+            descuento_promo = total_final * 0.15
+            total_final -= descuento_promo
+        elif dia_opc == "6" or dia_opc == "7":
+            print("dia 6, mañana 7, six seven")
+            descuento_promo = total_final * 0.067
+            total_final -= descuento_promo
+
+        # Referencia al mundial, tim payne mi idolo
+        premio_mundial = "Ninguno"
+        if total_final > 15000:
+            premio_mundial = "Llavero de Tim Payne"
+        elif total_final > 10000:
+            premio_mundial = "Llavero de Messi"
      
         print(f"\nN°:{contador_id_pedido}")
         print("-------------------------------------------------")  
         print(f"Cliente:{cliente}")
         print(f"productos:{productos_texto}")
         print(f"subtotal:${subtotal:.2f}")
-        print(f"Costo del Envío({zona_elegida}):${costo_envio:.2f})")
+        print(f"Costo del Envío({zona_elegida}):${costo_envio:.2f}")
+        if descuento_promo > 0:
+            print(f"Descuento aplicado: -${descuento_promo:.2f}")
+        # Muestra que premio se llevo basicamente
+        if premio_mundial != "Ninguno":
+            print(f"Se consiguio el llavero de {premio_mundial.replace('Llavero de ', '')}")
         print(f"\nTOTAL A PAGAR:${total_final:.2f}")
         print("----------------------------------------------------")
         print("\nDesea seguir con el pago?\n1.Sí\n2.No")
@@ -138,11 +159,48 @@ def menu_sistema():
                     cuo=input("ingrese la cantidad de cuotas (1-12):").strip()
                     if cuo in cuotas:
                         total_final=total_final+(total_final)*cuotas[cuo]
+                        
+                        premio_mundial = "Ninguno"
+                        if total_final > 15000:
+                            premio_mundial = "Llavero de Tim Payne"
+                        elif total_final > 10000:
+                            premio_mundial = "Llavero de Messi"
+
                         print(f"\n¡PEDIDO #{contador_id_pedido} REGISTRADO!")
-                        print(f"\n Total a pagar ${total_final:.2f} en",cuo,"cuotas")
+                        if premio_mundial != "Ninguno":
+                            print(f"¡Te llevas un {premio_mundial} de regalo!")
+                        print(f"Total a pagar ${total_final:.2f} en {cuo} cuotas")
+                        
+                        fecha_dia = fecha_actual.strftime("%d/%m/%y")
+                        pedidos[contador_id_pedido] = {
+                            "cliente": cliente,
+                            "zona": zona_elegida,
+                            "productos_texto": productos_texto,
+                            "total": total_final,
+                            "fecha": fecha_dia,
+                            "regalo": premio_mundial,
+                            "repartidor": "No asignado"
+                        }
                         contador_id_pedido+=1
                     else:
                         print("Error!,la cantidad de cuotas se excedio el tope(1-12)")
+                else:
+                    print(f"\n¡PEDIDO #{contador_id_pedido} REGISTRADO!")
+                    if premio_mundial != "Ninguno":
+                        print(f"¡Te llevas un {premio_mundial} de regalo!")
+                    print(f"Total a pagar ${total_final:.2f}")
+                    
+                    fecha_dia = fecha_actual.strftime("%d/%m/%y")
+                    pedidos[contador_id_pedido] = {
+                        "cliente": cliente,
+                        "zona": zona_elegida,
+                        "productos_texto": productos_texto,
+                        "total": total_final,
+                        "fecha": fecha_dia,
+                        "regalo": premio_mundial,
+                        "repartidor": "No asignado"
+                    }
+                    contador_id_pedido+=1
 
             else:
                 print("Error!, su eleccion no esta dentro de las opciones")
@@ -171,7 +229,7 @@ def ejecutar_inicio():
             print("Finalizando ejecucion del programa.")
             break
         else:
-            print("[Error] Opcion invalida. Intente de nuevo.")
+            print("[Error] Opcion invalida. intente de nuevo.")
 
 if __name__ == "__main__":     
     ejecutar_inicio()
