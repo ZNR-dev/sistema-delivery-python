@@ -58,11 +58,9 @@ Durante el desarrollo del sistema se implementaron los siguientes contenidos de 
 - Funciones
 - Diccionarios
 - Acumuladores y contadores
--
--
--
-
----
+- Validacion
+- Manejo basico de errores 
+- Modularizacion del programa
 
 # Requisitos
 
