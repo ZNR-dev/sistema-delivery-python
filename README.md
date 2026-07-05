@@ -65,8 +65,11 @@ Durante el desarrollo del sistema se implementaron los siguientes contenidos de 
 ---
 
 # Requisitos
+
+Para ejecutar correctamente el sistema es necesario contar con los siguientes recursos:
 - Phyton instalado
-- Una terminal o consola
+- Un entorno de desarrollo o una terminal que permita ejecutar programas en Python.
+- Todos los archivos que forman parte del proyecto ubicados dentro de la misma carpeta.
 
 ---
 
