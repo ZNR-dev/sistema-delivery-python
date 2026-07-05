@@ -5,6 +5,10 @@ contador_id_pedido = 1
 historial_clientes = {}  
 fecha_actual = date.today() 
 
+repartidores={
+    101:{"nombre":"Juana","Edad":25,"Categoria":"ORO","Puntos":22500}
+}
+
 zonas_opciones = {
     "1": "Resistencia",
     "2": "Barranqueras",
@@ -40,6 +44,14 @@ tabla_zonas = {
     "Puerto Vilelas":4000.0
 }
 
+
+
+
+
+
+
+
+
 def ver_pedidos():
     if not pedidos:
         print("\n[Info] No hay pedidos registrados.")
@@ -54,7 +66,85 @@ def ver_pedidos():
         print(f"Total: ${p['total']:.2f}")
         print("-" * 30)
 
-def menu_sistema():
+
+def cuenta():
+    print("1. Ya soy parte")
+    print("2. Quiero unirme")
+    print("3. volver al menu anterior")
+
+    c_op=input("seleccione una opcion (1-3):").strip
+
+    if c_op=="1":
+        print("ingrese su Id de usuario:")
+        id_repartidor=float(input()).strip()
+
+        if id_repartidor in repartidores:
+            print("----------Tu Informacion----------")
+            print("ID de repartidor:")
+            print("Nombre:")
+            print("Edad:")
+            print("Categoria:")
+            print("puntos ganados:")
+        else:
+            print("Error!.El Id ingresado no se encuentra en el sistema")
+    elif c_op=="2":
+        print("\n---------- ¡Crea tu Cuenta Ya! ----------")
+        try:
+            # Pedimos la edad como entero
+            Edad = int(input("Ingrese la Edad (mientras sea mayor a 18 años): ").strip())
+        except ValueError:
+            print("Error: Debe ingresar un número válido para la edad.")
+            return
+
+        if Edad<18:
+            print("Usted es un menor de edad.No admitimos el trabajo para menores de 18 años")
+        else:
+            print("Ingrese nombre:")
+            nom_r=input().strip().capitalize
+
+            repartidores[id_repartidor]={
+                "Nombre":nom_r,
+                "Edad": Edad,
+                "Categoria":"BRONCE",
+                "Puntos":0
+            }        
+
+            print(f"\n¡Cuenta creada con exito para {nom_r}! Bienvenido a Delivery")
+    elif c_op=="3":
+        print("Volviendo al menu anterior.")
+    else:
+        print("Error!.Su eleccion no esta dentro de la opciones permitidas") 
+
+def promos_horarios():
+
+def Estadisticas_Rankings():
+
+
+
+
+
+def menu_repartidor()  :
+    print("\n--- Menu del Delivery ---")
+    print("1.Cuenta del repartidor")
+    print("2.Promos de Horarios")
+    print("3.Estadisticas y Rankings")
+    print("4. Salir")
+    op2=input("seleccione una opcion (1-4):").strip()
+
+    if  op2=="1":
+        cuenta()
+    elif op2=="2":
+        promos_horarios()
+    elif op2=="3":
+        Estadisticas_Rankings()
+    elif op2=="4":
+        print("Volviendo a el menu anterior")
+    else:
+        print("Error!. Eleccion Fuera de Rango")
+
+
+
+def menu_cliente():
     global contador_id_pedido 
     global pedidos 
     
@@ -141,6 +231,7 @@ def menu_sistema():
         # Muestra que premio se llevo basicamente
         if premio_mundial != "Ninguno":
             print(f"Se consiguio el llavero de {premio_mundial.replace('Llavero de ', '')}")
+        
         print(f"\nTOTAL A PAGAR:${total_final:.2f}")
         print("----------------------------------------------------")
         print("\nDesea seguir con el pago?\n1.Sí\n2.No")
@@ -158,7 +249,7 @@ def menu_sistema():
                     print("\n¿En cuantas cuotas desea pagar?")
                     cuo=input("ingrese la cantidad de cuotas (1-12):").strip()
                     if cuo in cuotas:
-                        total_final=total_final+(total_final)*cuotas[cuo]
+                        total_final=total_final-(total_final)*cuotas[cuo] #cuotas arreglado
                         
                         premio_mundial = "Ninguno"
                         if total_final > 15000:
@@ -220,12 +311,15 @@ def menu_sistema():
 def ejecutar_inicio():
     while True:
         print("\n-----Bienvenido a Sistema Delivery-----")
-        print("1. Ver menu")
-        print("2. Cerrar sesion")
+        print("1. Ver menu como cliente")
+        print("2.Ver menu como Repartidor")
+        print("3. Cerrar sesion")
         op = input("Seleccione una opcion (1 o 2): ").strip()
         if op == "1":
-            menu_sistema()
-        elif op == "2":
+            menu_cliente()
+        elif op=="2":
+            menu_repartidor()     
+        elif op == "3":
             print("Finalizando ejecucion del programa.")
             break
         else:
