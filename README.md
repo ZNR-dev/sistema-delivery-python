@@ -26,7 +26,7 @@ Este preoyecto consiste en el desarrollo de un sistema de gestion para un servic
 
 El sistema funciona mediante una interfaz por consola y permite administrar pedidos de clientes, calcular automaticamente los importes, gestionar diferentes formas de pago, aplicar promociones y registrar informacion relevante para el funcionamiento del servicio.
 
-Durante su desarrollo se aplicaron los contenidos aprendidos en la materia,haciendo uso de estructuras de control, finciones, validaciones, estructuras de datos y modularizacion para contruir una solucion optimizada y funcional.
+Durante su desarrollo se aplicaron los contenidos aprendidos en la materia, haciendo uso de estructuras de control, funciones, validaciones, estructuras de datos y modularizacion para contruir una solucion optimizada y funcional.
 
 ---
 
