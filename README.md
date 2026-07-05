@@ -75,11 +75,7 @@ Para ejecutar correctamente el sistema es necesario contar con los siguientes re
 1. Descargar o clonar el repositorio del proyecto.
 2. Abrir una terminal o el entorno del dearrollo utilizado.
 3. Acceder a la carpeta donde se encuentra el proyecto.
-4. Ejecutar el Archivo principal del sistema con el siguiente Comando:
-
-```bash
-Practica.py
-```
+4. Ejecutar el Archivo principal del sistema.
 
 Una vez iniciado el programa, se mostrara el menu pricipal desde cual podran utilizarse las distintas funcionalidades del sistema.
 
