@@ -80,7 +80,7 @@ Para ejecutar correctamente el sistema es necesario contar con los siguientes re
 4. Ejecutar el Archivo principal del sistema con el siguiente Comando:
 
 ```bash
-/Practica.py
+Practica.py
 ```
 
 Una vez iniciado el programa, se mostrara el menu pricipal desde cual podran utilizarse las distintas funcionalidades del sistema.
