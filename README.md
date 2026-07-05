@@ -71,6 +71,16 @@ Durante el desarrollo del sistema se implementaron los siguientes contenidos de 
 ---
 
 # Ejecucion
+1. Descargar o clonar el repositorio del proyecto.
+2. Abrir una terminal o el entorno del dearrollo utilizado.
+3. Acceder a la carpeta donde se encuentra el proyecto.
+4. Ejecutar el Archivo principal del sistema con el siguiente Comando:
+
+```bash
+python Practica.py
+```
+
+Una vez iniciado el programa, se mostrara el menu pricipal desde cual podran utilizarse las distintas funcionalidades del sistema.
 
 ---
 
@@ -85,7 +95,8 @@ Durante el desarrollo del proyecto se utilizo ChatGPT como herramienta de apoyyo
 
 Todas las respuestas obtenidas fueron analizadas, comprendidas y adaptadas por los integrantes del grupo antes de ser incorporadas al desarrollo del sistema.
 
+# Observaciones 
 
+Este proyecto fue desarrollado con fines exclusivamente academicos como Trabajo Final Integrador.
 
--
-
+La aplicacion fue diseñada para ejecutarse por consola y tiene como objetivo aplicar los contenidos abordados durante el cursado mediante el desarrollo de un sistema funcional para la gestion de un servicio de delivery.
