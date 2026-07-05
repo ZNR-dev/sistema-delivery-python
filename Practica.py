@@ -21,7 +21,6 @@ repartidores={
     105:{"Nombre":"Ana","Edad":30,"Categoria":"PLATA","Puntos":110,"Vehiculo":"Bici(Eco)","Pedidos_exitosos": 5, "Pedidos_cancelados":0 ,"Ganancias_viajes": 600.0, "Propinas": 40.0, "Resena": "rápido"}
 }
 
-
 zonas_opciones = {
     "1": "Resistencia",
     "2": "Barranqueras",
@@ -68,9 +67,6 @@ vehiculos={
     "4":"Ninguno"
 }
 
-
-
-
 def obtener_categoria_texto(puntos):
     if puntos > 150: return "ORO"
     if puntos >= 100: return "PLATA"
@@ -93,8 +89,48 @@ def ver_pedidos():
         print(f"Total: ${p['total']:.2f}")
         print("-" * 30)
 
+def lista_repartidores():
+    print("\n=== Repartidores Disponibles (Con distancia en tiempo Real) ===")
+
+    # 1. Diccionario vacío para llenarlo dinámicamente
+    distancias = {}
+    
+    # 2. Le asignamos distancia aleatoria a TODO el que exista en el sistema
+    for id_rep, stats in repartidores.items():
+        nombre_rep = stats["Nombre"]
+        distancias[nombre_rep] = round(random.uniform(0.5, 7.5), 1)
+    
+    # 3. Algoritmo manual para buscar al más cercano
+    repartidor_mas_cercano = None
+    distancia_minima = 99.0
+    for k in distancias:
+        if distancias[k] < distancia_minima:
+            distancia_minima = distancias[k]
+            repartidor_mas_cercano = k
+
+    # 4. Imprimimos los datos en pantalla leyendo directo de 'repartidores'
+    for id_repartidor, stats in repartidores.items():
+        nombre_rep = stats["Nombre"]
+        puntos_rep = stats.get("Puntos", 0) 
+        exitosos_rep=stats.get('pedidos_exitosos',0)
+        cancelados_rep=stats.get('pedidos_cancelados',0)
+
+        cat = obtener_categoria_texto(puntos_rep)
+        
+        dist = distancias[nombre_rep] 
+        transporte = stats["Vehiculo"]
+        info_bici = "[Eco-Friendly]" if "Bici" in transporte else ""
+        recomendado = "¡RECOMENDADO POR CERCANÍA!" if nombre_rep == repartidor_mas_cercano else ""
+        
+        # Cambiamos 'stats["puntos"]' por nuestra nueva variable segura 'puntos_rep'
+        print(f"{id_repartidor}. {nombre_rep}({cat}), {transporte}{info_bici}->A {dist} km {recomendado}")
+        print(f"   puntos:{puntos_rep}, Historial:{exitosos_rep} éxitos/{cancelados_rep} fallas")
+        print("-" * 75)
+        
+    return distancias
 
 def cuenta():
+   
     print("\n¿Queres ser parte de este grupo de Deliverys?\n1. Ya soy parte\n2. Quiero unirme\n3. volver al menu anterior")
 
     c_op=input("seleccione una opcion (1-3):").strip()
@@ -128,6 +164,7 @@ def cuenta():
             print("Error!.El Id ingresado no se encuentra en el sistema")
 
     elif c_op=="2":
+
         print("\n---------- ¡Crea tu Cuenta Ya! ----------")
         try:
             id_nuevo=int(input("Defina su numero de usuarios:").strip())
@@ -148,7 +185,7 @@ def cuenta():
             print("Usted es un menor de edad.No admitimos el trabajo para menores de 18 años")
         else:
             print("Ingrese nombre:")
-            nom_r=input().strip().capitalize()
+            nom_r=input().strip()
 
             print("Ingrese vehiculo con el que trabajara ")
             print("1.Moto\n2.Bici(Eco)\n3.Auto\nNinguno")
@@ -209,46 +246,6 @@ def promos_horarios():
     
     print("-"*50)
 
-def lista_repartidores():
-    print("\n===Repatidores Disponibles (Con distancia en tiempo Real)")
-
-      # Simulamos distancias en variables individuales o diccionario temporal
-    distancias = {
-        "Carlos": round(random.uniform(0.5, 7.5), 1),
-        "Ana": round(random.uniform(0.5, 7.5), 1),
-        "Pedro": round(random.uniform(0.5, 7.5), 1),
-        "Sofía": round(random.uniform(0.5, 7.5), 1),
-        "Juan": round(random.uniform(0.5, 7.5), 1)
-    }
-    
-    # Algoritmo manual para encontrar el menor sin usar funciones de listas
-    repartidor_mas_cercano = "Carlos"
-    distancia_minima = distancias["Carlos"]
-    
-    for k in distancias:
-        if distancias[k] < distancia_minima:
-            distancia_minima = distancias[k]
-            repartidor_mas_cercano = k
-
-    # Imprimimos recorriendo nuestro mapeo numérico fijo
-    for id_repartidor, stats in repartidores.items():
-        nombre_rep=stats["Nombre"]
-        cat=obtener_categoria_texto(stats["Puntos"])
-
-        dist=distancias[nombre_rep]
-
-        transporte=stats["Vehiculo"]
-        info_bici="[Eco-Friendly]" if "Bici" in transporte else""
-
-        recomendado="¡Recomendado por cercania!" if nombre_rep==repartidor_mas_cercano else ""
-
-        print(f"{id_repartidor}.{nombre_rep}({cat}), {transporte}{info_bici}->A{dist} km{recomendado}")
-        print(f"puntos:{stats['Puntos']}, Historial:{stats['Pedidos_exitosos']} exitos/{stats['Pedidos_cancelados']}fallas")   
-        print("-"*75)
-    return distancias
-
-
-
 def Estadisticas_Rankings():
     print("="*52)
     print("ESTADÍSTICAS GENERALES DEL SISTEMA")
@@ -292,8 +289,6 @@ def menu_repartidor()  :
         print("Volviendo a el menu anterior")
     else:
         print("Error!. Eleccion Fuera de Rango")
-
-
 
 def menu_cliente():
     global contador_id_pedido 
