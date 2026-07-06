@@ -1,11 +1,21 @@
+#Funcion externa para manejar fechas y horas.
 from datetime import datetime
+#Funcion externa para utilizar el "azar", basicamente tomar decisiones aleatorias segun se necesite.
 import random
 
-pedidos = {}  
-contador_id_pedido = 1
-historial_clientes = {}  
-fecha_actual = datetime.today() 
 
+#¿Que es un diccionario? Es una estructura basica de python que sirve para almacenar una clave y su valor, ejemplo: Contenido{clave} = valor
+
+
+#Diccionario vacio para agregar pedidos
+pedidos = {}  
+#Contador que es utilizado para asignar un ID unico para cada pedido
+contador_id_pedido = 1
+#Diccionario encargado de manejar los clientes
+historial_clientes = {}  
+#Utilizando la funcion externa, se asigna la fecha que corresponde al presente dia.
+fecha_actual = datetime.today() 
+#Un diccionario que aloja los dias de la semana, utilizado mas adelante
 dias_semana={
     0:"Lunes",
     1:"Martes",
@@ -15,18 +25,19 @@ dias_semana={
     5:"Sabado",
     6:"Domingo"
 }
+#Un diccionario que contiene repartidores de ejemplo
 repartidores={
     101:{"Nombre":"Juan","Edad":25,"Categoria":"ORO","Puntos":22500,"Vehiculo":"Moto","Pedidos_exitosos": 12, "Pedidos_cancelados": 1,"Ganancias_viajes": 6000.0, "Propinas": 450.0, "Resena": "Muy rápido"},
     105:{"Nombre":"Ana","Edad":30,"Categoria":"PLATA","Puntos":110,"Vehiculo":"Bici(Eco)","Pedidos_exitosos": 5, "Pedidos_cancelados":0 ,"Ganancias_viajes": 600.0, "Propinas": 40.0, "Resena": "rápido"}
 }
-
+#Un diccionario que contiene las zonas disponibles para entregas, dentro del rango logico permitido (no hacemos delivery interprovincial
 zonas_opciones = {
     "1": "Resistencia",
     "2": "Barranqueras",
     "3": "Fontana",
     "4": "Puerto Vilelas"
 }
-
+#Este diccionario sirve para controlar las cuotas (ver codigo mas adelante para entender)
 cuotas={
     "1":0.0,
     "2":0.50,
@@ -41,30 +52,33 @@ cuotas={
     "11":0.910,
     "12":0.840
 }
-
+#Formas de pago dentro de un diccionario
 forma_pago={
     "1":0,
     "2":0,
     "3":0
 }
-
+#Diccionario que contiene el 
 tabla_zonas = {
     "Resistencia": 1000.0,
     "Barranqueras": 2000.0,
     "Fontana":3500.0,
     "Puerto Vilelas":4000.0
 }
+#Diccionario que contiene los dias que hay promo
 promos_dia={
     "Jueves":"pomo",
     "Sabado":"pomo",
     "Domingo":"pomo"
 }
+#Diccionario que contiene los vehiculos
 vehiculos={
     "1":"Moto",
     "2":"Bici (Eco)",
     "3":"Auto",
     "4":"Ninguno"
 }
+#Diccionario que contiene el estado del repartidor
 Estado={
     "1":"Pendiente",
     "2":"En preparacion",
@@ -72,6 +86,7 @@ Estado={
     "4":"Entregado",
     "5":"Cancelado"
 }
+#Diccionario que contiene las tarjetas disponibles cuando se selecciona la forma de pago correspondiente.
 tarjetas={
     "1":"Mastercad",
     "2":"Visa",
@@ -82,6 +97,7 @@ tarjetas={
     "7":"Banco del Chaco"
 
 }
+#Diccionario para billeteras virtuales
 b_virtual={
     "1":"Mercado pago",
     "2":"Uola",
@@ -89,14 +105,14 @@ b_virtual={
     "4":"Naranja x"
 }
 
-################ "Estructuras de Clientes, Stock e ID autoincremental de clientes extraídas de Practica.py"
+#Un diccionario con las estructuras de Clientes, Stock e ID
 clientes_datos = {
     "Carlos": {"id_cliente": 1001, "deuda": 0.0, "historial": ["Pizza", "Hamburguesa", "Lomito"], "compras_totales": 3},
     "Ana": {"id_cliente": 1002, "deuda": 1500.0, "historial": ["Ensalada", "Agua"], "compras_totales": 1},
     "Pedro": {"id_cliente": 1003, "deuda": 0.0, "historial": [], "compras_totales": 0}
 }
 contador_id_cliente = 1004
-
+#Diccionario que contiene los productos en stock
 stock_productos = {
     "Pizza": 5,
     "Hamburguesa": 8,
@@ -104,15 +120,15 @@ stock_productos = {
     "Empanada": 12,
     "Gaseosa": 20
 }
-
+#Una Funcion que sirve para devolver una categoria dependiendo de los puntos, en caso de no tener suficientes segun el caso, siempre devuelve bronce
 def obtener_categoria_texto(puntos):
     if puntos > 750: return "ORO"
     if puntos >= 500: return "PLATA"
     return "BRONCE"
-
+#Esta funcion sirve para calcular el tiempo de entrega segun una distancia
 def calcular_tiempo_entrega(distancia_repartidor):
     return 5+int(distancia_repartidor*4)
-
+#Funcion para actualizar el estado del pedido
 def actualizar_estado(id_pedido,nuevo_estado):
     pedido=pedidos[id_pedido]
 
@@ -123,7 +139,7 @@ def actualizar_estado(id_pedido,nuevo_estado):
     if nuevo_estado in Estado:
         estado=Estado[nuevo_estado]
     
-        ################ "Botón de arrepentimiento y recargo por cancelación en viaje integrado desde Practica.py"
+        #Botón de arrepentimiento y recargo por cancelación en viaje
         if estado == "Cancelado" and pedido["estado"] == "En camino":
             nombre_c = pedido["cliente"]
             recargo = pedido["total"] * 0.30
@@ -136,7 +152,7 @@ def actualizar_estado(id_pedido,nuevo_estado):
         return True
     else:
         print("Error! opcion de estado invalida.")
-
+#
 def gamificacion(id_pedido,estado_num):
     pedido=pedidos[id_pedido]
 
@@ -223,7 +239,7 @@ def gamificacion(id_pedido,estado_num):
 
         if exitosos_actuales %10==0:
             print(f"\n¡Premio Alcanzado! Bono al Buen Servicio para {nombre_rep}.")
-
+#Funcion para ver pedidos
 def ver_pedidos():
     if not pedidos:
         print("\n[Info] No hay pedidos registrados.")
@@ -257,7 +273,7 @@ def ver_pedidos():
         id_rep=pedidos[id_p].get('id_repartidor')
         print(f"Repartidor:{repartidores[id_rep].get('Nombre')}")
         print(f"Estado: {p.get('estado')}")
-
+#Funcion para ver la lista de repartidores
 def lista_repartidores():
     print("\n=== Repartidores Disponibles (Con distancia en tiempo Real) ===")
 
@@ -292,7 +308,7 @@ def lista_repartidores():
         print("-" * 75)
         
     return distancias
-
+#Funcion para iniciar como repartidor
 def cuenta_repartidor():
     print("\n¿Queres ser parte de este grupo de Deliverys?\n1. Ya soy parte\n2. Quiero unirme\n3. volver al menu anterior")
 
@@ -379,7 +395,7 @@ def cuenta_repartidor():
         print("Volviendo al menu anterior.")
     else:
         print("Error!.Su eleccion no esta dentro de la opciones permitidas")
-
+#Funcion de promos
 def promos_horarios():
     config_promos={
         "Almuerzo":"+300 por viaje y +5 puntos extra",
@@ -410,7 +426,7 @@ def promos_horarios():
         print("actualmente no hay ninguna promo horaria activa.")
         print("proximo turno de bonos: Revisa en cronograma de Arriba")
     print("-"*50)
-
+#Esta funcion es para un ranking de repartidores, deberia insentivar el esfuerzo
 def Estadisticas_Rankings():
     print("="*52)
     print("ESTADÍSTICAS GENERALES DEL SISTEMA")
@@ -436,7 +452,7 @@ def Estadisticas_Rankings():
         print(f"Vehiculo:{transporte_rep} \nReseña destacada: {resena_rep}")
         print(f"Ganancias Netas (Viajes + Propinas): ${total_neto:.2f}")
         print("-"*52)
-
+#Funcion para registrar un pedido
 def registrar_pedido():
     global contador_id_pedido
     global contador_id_cliente
@@ -445,7 +461,7 @@ def registrar_pedido():
     print("\nRegistrando pedido....")
     cliente = input("\nNombre del cliente: ").strip().capitalize()
 
-    ################ "Gestión e identificación de deudas, historial y asignación de ID único traída de Practica.py"
+    #Este apartado es para la gestión e identificación de deudas, historial y asignación de ID único
     if cliente in clientes_datos:
         id_actual = clientes_datos[cliente]["id_cliente"]
         deuda_actual = clientes_datos[cliente]["deuda"]
@@ -472,7 +488,7 @@ def registrar_pedido():
     productos_texto = ""
     lista_productos_aux = []
 
-    ################ "Muestra del stock controlado según el inventario disponible de Practica.py"
+    #Este apartado es una muestra del stock controlado según el inventario disponible.
     print("\nMenú de Stock Disponible:")
     for prod, cant in stock_productos.items():
         print(f"- {prod}: {cant} unidades disponibles")
@@ -482,7 +498,7 @@ def registrar_pedido():
         if nombre_prod == '0':
             break
 
-        ################ "Validación y detención por falta de stock según el inventario de Practica.py"
+        #Aqui se comprueba y detiene el pedido por falta de stock según el inventario,
         if nombre_prod in stock_productos:
             if stock_productos[nombre_prod] <= 0:
                 print(f"[Sin Stock] Lo sentimos, no quedan unidades de {nombre_prod}. Elige otro producto.")
@@ -495,7 +511,7 @@ def registrar_pedido():
             subtotal += precio_prod
             lista_productos_aux.append(nombre_prod)
             
-            ################ "Descuento del producto del inventario de stock de Practica.py"
+            #Descuento del producto del inventario de stock.
             if nombre_prod in stock_productos:
                 stock_productos[nombre_prod] -= 1
 
@@ -544,7 +560,7 @@ def registrar_pedido():
     repartidor_asignado_id = None
     distancia_minima = 99.0
 
-    ################ "Asignación exclusiva de repartidores Activos integrada desde Practica.py"
+    #Asignación exclusiva de repartidores Activos.
     for id_rep, datos_rep in repartidores.items():
         if datos_rep.get("Activo", True):
             nombre_rep = datos_rep["Nombre"]
@@ -655,11 +671,11 @@ def registrar_pedido():
             print("Error!, su eleccion no esta dentro de las opciones")
     else:
         clientes_datos[cliente]["compras_totales"] -= 1
-        ################ "Devolución automática al inventario de stock si la operación se cancela de Practica.py"
+        #Devolución automática al inventario de stock si la operación se cancela
         for p_item in lista_productos_aux:
             if p_item in stock_productos:
                 stock_productos[p_item] += 1
-
+#Funcion para cambiar el estado del pedido modo empleado
 def cambio_estado():
     if not pedidos:
         print("no hay pedidos para modificar")
@@ -675,7 +691,7 @@ def cambio_estado():
             print("No existe esa compra")
     except ValueError:
         print("Numero de compra Invalido")
-
+#Funcion para el menu de clientes.
 def menu_cliente():
     while True:
         print("\n--- Menu del Delivery ---")
@@ -698,7 +714,7 @@ def menu_cliente():
         else:
             print("[Error] Opcion invalida. Intente de nuevo.")
 
-################ "Menú y panel de control de disponibilidad real para Repartidores traído de Practica.py"
+#Menú y panel de control de disponibilidad real para Repartidores
 def menu_repartidor():
     while True:
         print("\n--- Panel de Control de Repartidores ---")
@@ -730,7 +746,7 @@ def menu_repartidor():
             break
         else:
             print("Opción inválida.")
-
+#Funcion para ejecutar el inicio del programita.
 def ejecutar_inicio():
     while True:
         print("\n-----Bienvenido a Sistema Delivery-----")
