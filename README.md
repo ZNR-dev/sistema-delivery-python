@@ -16,7 +16,7 @@
 - Halier, Fiorella Estefania
 - Gonzalez, Maria Teresa
 - Ramirez, Zahira Nahir
-- Sosa, Tomas
+- Sosa, Tomás
 
 ---
 
