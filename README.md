@@ -83,14 +83,18 @@ Una vez iniciado el programa, se mostrara el menu pricipal desde cual podran uti
 
 # Uso de Inteligencia Artificial 
 
-Durante el desarrollo del proyecto se utilizo ChatGPT como herramienta de apoyyo para:
+Durante el desarrollo del proyecto se utilizo Gemini como herramienta de apoyo para ayudar en el proceso de desarrollo del codigo:
 
-- Resolver dudas relacionada con Python
-- Poponer mejoreas en la organizacion del codigo
-- Analizar errores
-- Colaborar en la implementacion de determinadas funcionalidades
+Su uso estuvo orientado principalmente a: 
 
-Todas las respuestas obtenidas fueron analizadas, comprendidas y adaptadas por los integrantes del grupo antes de ser incorporadas al desarrollo del sistema.
+- Resolver dudas relacionadas con la sintaxis y el funcionamiento de Python.
+- Analizar errores de ejcucion y ayudar a identificar su origen dentro del codigo.
+- Proponer alternativas para la solucion de errores detectados durantes las pruebas del programa.
+- Asistir en la integracion de modificaciones entre los distintos modulos del sistema, especialmente entre las funcionalidades correspondientes al modo Cliente y el modo Repartidor.
+
+La Inteligencia Artificial no fue utilizada para desarrollar la logica principal del sistema ni para implementar funcionalidades completas, sino como herramienta de apoyo para el analisi y la resolucion de problemas surgidos durante la programacion.
+
+Todas las sugerencias obtenidas fueron analizadas, comprendidas y adaptadas por los integrantes del grupo antes de ser incorporadas al desarrollo del sistema.
 
 # Observaciones 
 
