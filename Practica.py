@@ -66,6 +66,13 @@ vehiculos={
     "3":"Auto",
     "4":"Ninguno"
 }
+Estado={
+    "1":"Pendiente",
+    "2":"En preparacion",
+    "3":"En camino",
+    "4":"Entregado",
+    "5":"Cancelado"
+}
 
 def obtener_categoria_texto(puntos):
     if puntos > 150: return "ORO"
@@ -75,6 +82,108 @@ def obtener_categoria_texto(puntos):
 def calcular_tiempo_entrega(distancia_repartidor):
     return 5+int(distancia_repartidor*4)
 
+def actualizar_estado(id_pedido,nuevo_estado):
+    pedido=pedidos[id_pedido]
+
+    if pedido["estado"]=="Entregado" or pedido["estado"]=="Cancelado":
+        print(f"\nError!. El pedido {id_pedido} ya se encuentra '{pedido['estado']}")
+        return False
+    
+    if nuevo_estado in Estado:
+        estado=Estado[nuevo_estado]
+    
+        pedido["estado"]=estado
+
+        print(f"estado del pedido #{id_pedido} actualizado a: {estado}")
+        return True
+    else:
+        print("Error! opcion de estado invalida.")
+
+
+
+def gamificacion(id_pedido,estado_num):
+    pedido=pedidos[id_pedido]
+
+    id_rep=pedido.get("id_repartidor")
+
+    if isinstance(id_rep,dict):
+        id_rep=None
+
+    if not id_rep or id_rep not in repartidores:
+
+        repartidor_data=pedido.get("repartidor")
+        
+        if isinstance(repartidor_data,dict): 
+            nombre_buscar=repartidor_data.get("Nombre","").strip().lower()
+        else:
+            nombre_buscar=str(repartidor_data).strip().lower()
+       
+        for k, v in repartidores.items():
+            if v.get("Nombre","").strip().lower()==nombre_buscar:
+                id_rep=k
+                break
+
+    if id_rep in repartidores:
+        rep=repartidores[id_rep]
+    else:
+        primer_id=None
+        for k in repartidores:
+            primer_id=k
+            break
+
+        rep=repartidores[primer_id]
+
+   
+    nombre_rep=rep.get("Nombre","Repartidor")
+
+    # Usamos .get() con las claves correctas para evitar que explote si es nuevo
+    cancelados_actuales = rep.get("Pedidos_cancelados", 0)
+    exitosos_actuales = rep.get("Pedidos_exitosos", 0)
+    puntos_actuales = rep.get("Puntos", 0)
+    ganancias_actuales = rep.get("Ganancias_viajes", 0.0)
+    propinas_actuales = rep.get("Propinas", 0.0)
+
+    if estado_num=="5":
+        rep["Pedidos_cancelados"]=cancelados_actuales+1
+        print(f"El pedido fue cancelado.(total cancelados:{cancelados_actuales})")
+        
+        if rep["Pedidos_cancelados"]==10:
+            rep["Puntos"]=puntos_actuales-30
+            print(f"\n¡Penalizacion alcanzada!{nombre_rep} acumulo 10 pedidos cancelados")
+    
+    
+    elif estado_num=="4":
+        rep["Pedidos_exitosos"]=exitosos_actuales+1
+        puntos_actuales+=10
+        print(f"\n¡Pedido entregado con Exito por {nombre_rep}!(+10 puntos)")
+
+        if "Bici (Eco)" in rep.get("Vehiculo",""):
+            puntos_actuales+=5
+            print("¡Viaje Ecologico Sustentable!(+5 puntos extra Eco-Green)")
+        
+        rep["Puntos"]=puntos_actuales
+
+        rep["Ganancia_viajes"]= ganancias_actuales+500.0
+
+        print("¿Desea dejarle propina?\n1.Sí\nNo")
+
+        if input().strip()=="1":
+            try:
+                monto=float(input("¿Cuántos:$"))
+                rep["Propinas"]=propinas_actuales+monto
+                print(f"¡Propina de ${monto:.2f} agregada!")
+
+            except ValueError:
+                print("Monto inválido")
+        
+        print("¿Desea dejar una reseña?\n1.Sí\n2.No")
+        if input().strip()=="1":
+            rep["Resena"]=input("Comentario:").strip()
+
+        if exitosos_actuales %10==0:
+            print(f"\n¡Premio Alcanzado! Bono al Buen Servicio para {nombre_rep}.")
+
+        
 def ver_pedidos():
     if not pedidos:
         print("\n[Info] No hay pedidos registrados.")
@@ -82,7 +191,7 @@ def ver_pedidos():
         
     print("\n  Reporte de operaciones:")
     for id_p, p in pedidos.items():
-        print(f"ID: {id_p} | Cliente: {p['cliente']} | Fecha: {p['fecha']} | Zona: {p['zona']}")
+        print(f"ID: {id_p} | Cliente: {p['cliente']} | Fecha: {p['fecha_compra']} | Zona: {p['zona']}")
         print(f"Productos: {p['productos_texto']}")
         if p["regalo"] != "Ninguno":
             print(f"Premio Mundial: {p['regalo']}")
@@ -118,7 +227,7 @@ def lista_repartidores():
         cat = obtener_categoria_texto(puntos_rep)
         
         dist = distancias[nombre_rep] 
-        transporte = stats["Vehiculo"]
+        transporte = stats.get("Vehiculo","No especificado")
         info_bici = "[Eco-Friendly]" if "Bici" in transporte else ""
         recomendado = "¡RECOMENDADO POR CERCANÍA!" if nombre_rep == repartidor_mas_cercano else ""
         
@@ -249,9 +358,11 @@ def promos_horarios():
 def Estadisticas_Rankings():
     print("="*52)
     print("ESTADÍSTICAS GENERALES DEL SISTEMA")
+
     total_facturado = 0.0
     for p in pedidos.values():
-        total_facturado += p["total"]
+        total_facturado += p.get("total",0.0)
+
     print(f"Cantidad de pedidos totales del local: {len(pedidos)}")
     print(f"Total Facturado en Ventas (con envíos): ${total_facturado:.2f}")
     print("="*52)
@@ -263,12 +374,20 @@ def Estadisticas_Rankings():
     for id_repartidor, stats in repartidores.items():
         nombre_rep= stats["Nombre"]
 
-        cat = obtener_categoria_texto(stats["Puntos"])
+        puntos_rep=stats.get("puntos",stats.get("Puntos",0))
+        edad_rep=stats.get("edad",stats.get("Edad","No especificado"))
+        transporte_rep=stats.get("vehiculos",stats.get("Vehiculo","No especificado"))
+        resena_rep=stats.get("resena",stats.get("Resena","Sin resena"))
 
-        total_neto = stats["Ganancias_viajes"] + stats["Propinas"]
+        ganancias=stats.get("ganancias_viajes",stats.get("Ganancias_viajes",0.0))
+        propinas= stats.get("propinas",stats.get("Propinas",0.0))
+        total_neto = ganancias+propinas
+
+        cat = obtener_categoria_texto(puntos_rep)
+
         
-        print(f"Nombre:{nombre_rep} \nEdad:{stats['Edad']} \nCategoria: {cat} \nPuntos: {stats['Puntos']} pts")
-        print(f"Vehiculo:{stats['Vehiculo']}  \nÚltima Reseña: \"{stats['Resena']}\"")
+        print(f"Nombre:{nombre_rep} \nEdad:{edad_rep} \nCategoria: {cat} \nPuntos: {puntos_rep} pts")
+        print(f"Vehiculo:{transporte_rep}  \nÚltima Reseña: \"{resena_rep}\"")
         print("-" * 52)
 
 def menu_repartidor()  :
@@ -347,9 +466,9 @@ def menu_cliente():
         print("\n¿Desea un pedido Eco-Green?\n1. Sí\n2. No")
         es_eco=(input("selecciones(1-2):").strip()=="1")
 
-        descuento_eco=50.0 if es_eco else 0.0
+        descuento_eco=0.10 if es_eco else 0.0
 
-        total_final=subtotal+costo_envio-descuento_eco
+        total_final=subtotal+costo_envio-(subtotal*descuento_eco)
 
         # Se agrego fechas de promo y evento especial
         descuento_promo = 0.0
@@ -368,8 +487,8 @@ def menu_cliente():
                     print("\n¿Desea aplicar el descuento?\n1.Sí\n2.No")
                     des=input().strip()
                     if des=="1":
-                        descuento_promo=0.15*100
-                        total_final= total_final-(total_final*0,15)
+                        descuento_promo=0.15
+                        total_final= total_final-(subtotal*descuento_promo)
                         print("\nDescuento aplicado con exito!!")
 
                 elif nombre_dia=="Sabado" or nombre_dia=="Domingo":
@@ -378,8 +497,8 @@ def menu_cliente():
                     print("\n¿Desea aplicar el descuento?\n1.Sí\n2.No")
                     des=input().strip()
                     if des=="1":
-                        descuento_promo=0.5*100
-                        total_final =total_final-(total_final * 0.5)
+                        descuento_promo=0.5
+                        total_final =total_final-(subtotal*descuento_promo)
                         print("\nDescuento aplicado con exito!!")
 
         # Referencia al mundial, tim payne mi idolo
@@ -388,7 +507,7 @@ def menu_cliente():
             premio_mundial = "Llavero de Tim Payne"
         elif total_final > 10000:
             premio_mundial = "Llavero de Messi"
-
+        print("\n                                               ")
         print("\n                RESUMEN DE COMPRA              ")
         print(f"N°:{contador_id_pedido}")
         print("-"*50)  
@@ -423,11 +542,13 @@ def menu_cliente():
                 rep_op=101
 
             if rep_op in repartidores:
-                repartidor_elegido=repartidores[rep_op]
-                distancia_final=distancia_sistema[repartidor_elegido["Nombre"]]
+                id_repartidor_elegido=rep_op
+                nombre_rep=repartidores[rep_op]["Nombre"]
+                distancia_final=distancia_sistema[nombre_rep]
             else:
-                repartidor_elegido=repartidores[101]
-                distancia_final=distancia_sistema[101]
+                id_repartidor_elegido=repartidores[101]
+                nombre_rep=repartidores[101]["Nombre"]
+                distancia_final=distancia_sistema[nombre_rep]
             
             tiempo_est=calcular_tiempo_entrega(distancia_final)
 
@@ -459,7 +580,7 @@ def menu_cliente():
                             "fecha_compra":fecha_dia,
                             "cliente": cliente,
                             "productos_texto": productos_texto,
-                            "repartidor":repartidor_elegido,
+                            "id_repartidor":id_repartidor_elegido,
                             "zona": zona_elegida,
                             "costo_envio":costo_envio,
                             "distancia_repartidor":distancia_final,
@@ -483,7 +604,7 @@ def menu_cliente():
                         "fecha_compra":fecha_dia,
                         "cliente": cliente,
                         "productos_texto": productos_texto,
-                        "repartidor":repartidor_elegido,
+                        "id_repartidor":id_repartidor_elegido,
                         "zona": zona_elegida,
                         "costo_envio":costo_envio,
                         "distancia_repartidor":distancia_final,
@@ -504,7 +625,28 @@ def menu_cliente():
     elif opcion == "2":
         ver_pedidos()
     elif opcion == "3":
-        print("Proximamente la parte para cambiar el estado del programa.")
+
+        if not pedidos:
+            print("no hay pedidos para modificar")
+            return
+        try:
+            id_buscar=int(input("Numero de compra:"))
+
+            if id_buscar in pedidos:
+                print("\nEstados:\n1.Pendiente\n2.En preparacion\n3.En camino\n4.Entregado \n5.Cancelado")
+                nuevo_est=input("seleccione nuevo estado (1-5):").strip()
+
+                if actualizar_estado(id_buscar,nuevo_est):
+                    
+                    gamificacion(id_buscar,nuevo_est)
+
+            else:
+
+                print("No existe esa compra")
+                
+        except ValueError:
+            print("Numero de compra Invalido")
+
     elif opcion == "4":
         print("Volviendo al menu de inicio.")
     else:
