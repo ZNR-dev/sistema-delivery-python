@@ -235,6 +235,7 @@ def ver_pedidos():
              print(f"{p.get('tip_transf','No esppecificado')}                                             Total:{p.get('total',0.0)}")
         else:
             print(f"{p.get('tipo_tarj','No esppecificado')}                                               Total:{p.get('total',0.0)}")
+        print(f"Repartidor:{repartidores[id_rep].get('Nombre')}")
         print(f"Estado: {p.get('estado')}")
 
 def lista_repartidores():
