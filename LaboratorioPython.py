@@ -535,28 +535,30 @@ def Estadisticas_Rankings():
 
 
 def menu_repartidor()  :
-    print("\n")
-    print("-"*50)
-    print("---------------- Menu de Delivery ----------------")
-    print("                  1.Cuenta Personal")
-    print("                  2.Promos de Horarios")
-    print("                  3.Estadisticas y Rankings")
-    print("                  4. Salir")
-    print("-"*50)
-    op2=input("\nseleccione una opcion (1-4):").strip()
+    while True:
+        print("\n")
+        print("-"*50)
+        print("---------------- Menu de Delivery ----------------")
+        print("                  1.Cuenta Personal")
+        print("                  2.Promos de Horarios")
+        print("                  3.Estadisticas y Rankings")
+        print("                  4. Salir")
+        print("-"*50)
+        op2=input("\nseleccione una opcion (1-4):").strip()
 
-    if  op2=="1":
-        cuenta_repartidor()
-    elif op2=="2":
-        promos_horarios()
-    elif op2=="3":
-        Estadisticas_Rankings()
-    elif op2=="4":
-        print("Volviendo a el menu anterior....")
-    else:
-        print("\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
-        print("Error!. Eleccion Fuera de Rango")
-        print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+        if  op2=="1":
+            cuenta_repartidor()
+        elif op2=="2":
+            promos_horarios()
+        elif op2=="3":
+            Estadisticas_Rankings()
+        elif op2=="4":
+            print("Volviendo a el menu anterior....")
+            break
+        else:
+            print("\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+            print("Error!. Eleccion Fuera de Rango")
+            print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
     
 
 
@@ -1000,28 +1002,30 @@ def cambio_estado():
 
 
 def menu_cliente():
-    global contador_id_pedido 
-    global pedidos 
-    
-    print("\n---------------- Menu de Delivery -----------------")
-    print("             1. Registrar nuevo pedido")
-    print("             2. Historial de pedidos")
-    print("             3. Cambiar estado de un pedido")
-    print("             4. Salir")
-    print("-"*50)
+    while True:
+        global contador_id_pedido 
+        global pedidos 
+        
+        print("\n---------------- Menu de Delivery -----------------")
+        print("             1. Registrar nuevo pedido")
+        print("             2. Historial de pedidos")
+        print("             3. Cambiar estado de un pedido")
+        print("             4. Salir")
+        print("-"*50)
 
-    opcion = input("\nSeleccione una opcion (1-4): ").strip()
+        opcion = input("\nSeleccione una opcion (1-4): ").strip()
 
-    if opcion == "1":
-        registrar_pedido()
-    elif opcion == "2":
-        ver_pedidos()
-    elif opcion == "3":
-        cambio_estado()
-    elif opcion == "4":
-        print("Volviendo al menu de inicio.")
-    else:
-        print("[Error] Opcion invalida. Intente de nuevo.")
+        if opcion == "1":
+            registrar_pedido()
+        elif opcion == "2":
+            ver_pedidos()
+        elif opcion == "3":
+            cambio_estado()
+        elif opcion == "4":
+            print("Volviendo al menu de inicio.")
+            break
+        else:
+            print("[Error] Opcion invalida. Intente de nuevo.")
 
 def ejecutar_inicio():
     while True:
