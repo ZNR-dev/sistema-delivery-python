@@ -23,13 +23,13 @@ repartidores={
     
 }
 clientes={
-    2500:{"Nombre":"Maria","Edad":"27","Documento":"27899234","Cant_compras":0,"Puntos_cl":0,"Rango":"PLATA"},
-    4044:{"Nombre":"Juan","Edad":"34","Documento":"36489560","Cant_compras":0,"Puntos_cl":0,"Rango":"BRONCE"},
-    3504:{"Nombre":"Malena","Edad":"25","Documento":"41473800","Cant_compras":0,"Puntos_cl":0,"Rango":"BRONCE"},
-    2004:{"Nombre":"Juan","Edad":"30","Documento":"37003509","Cant_compras":0,"Puntos_cl":0,"Rango":"PLATA"},
-    5566:{"Nombre":"Juan","Edad":"22","Documento":"42748509","Cant_compras":0,"Puntos_cl":0,"Rango":"ORO"},
-    1010:{"Nombre":"Juan","Edad":"60","Documento":"23747305","Cant_compras":0,"Puntos_cl":0,"Rango":"ORO"},
-    2020:{"Nombre":"Juan","Edad":"51","Documento":"25543788","Cant_compras":0,"Puntos_cl":0,"Rango":"PLATA"},
+    2500:{"Nombre":"Maria","Edad":"27","Documento":"27899234","Cant_compras":0,"Puntos_cl":200,"Rango":"PLATA"},
+    4044:{"Nombre":"Juan","Edad":"34","Documento":"36489560","Cant_compras":0,"Puntos_cl":150,"Rango":"BRONCE"},
+    3504:{"Nombre":"Malena","Edad":"25","Documento":"41473800","Cant_compras":0,"Puntos_cl":130,"Rango":"BRONCE"},
+    2004:{"Nombre":"Juan","Edad":"30","Documento":"37003509","Cant_compras":0,"Puntos_cl":330,"Rango":"PLATA"},
+    5566:{"Nombre":"Juan","Edad":"22","Documento":"42748509","Cant_compras":0,"Puntos_cl":560,"Rango":"ORO"},
+    1010:{"Nombre":"Juan","Edad":"60","Documento":"23747305","Cant_compras":0,"Puntos_cl":600,"Rango":"ORO"},
+    2020:{"Nombre":"Juan","Edad":"51","Documento":"25543788","Cant_compras":0,"Puntos_cl":230,"Rango":"PLATA"},
     
 }
 zonas_opciones = {
