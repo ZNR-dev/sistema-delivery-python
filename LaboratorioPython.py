@@ -566,7 +566,7 @@ def registrar_pedido():
                     "Puntos_cl":0,
                     "Rango": "BRONCE"
                 }
-                print(f"\n¡Cuenta creada con exito! T u id de usuario es:{id_cln}")
+                print(f"\n¡Cuenta creada con exito! Tu id de usuario es:{id_cln}")
             else:
                 print("Erros!!. Numero de documento no valido")
         
