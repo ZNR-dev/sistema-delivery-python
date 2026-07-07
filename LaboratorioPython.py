@@ -89,6 +89,14 @@ b_virtual={
     "4":"Naranja x"
 }
 
+stock_productos = {
+    "Pizza": 5,
+    "Hamburguesa": 8,
+    "Lomito": 3,
+    "Empanada": 12,
+    "Gaseosa": 20
+}
+
 def obtener_categoria_texto(puntos):
     if puntos > 750: return "ORO"
     if puntos >= 500: return "PLATA"
@@ -151,7 +159,6 @@ def gamificacion(id_pedido,estado_num):
    
     nombre_rep=rep.get("Nombre","Repartidor")
 
-    # Usamos .get() con las claves correctas para evitar que explote si es nuevo
     cancelados_actuales = rep.get("Pedidos_cancelados", 0)
     exitosos_actuales = rep.get("Pedidos_exitosos", 0)
     puntos_actuales = rep.get("Puntos", 0)
@@ -241,15 +248,12 @@ def ver_pedidos():
 def lista_repartidores():
     print("\n=== Repartidores Disponibles (Con distancia en tiempo Real) ===")
 
-    # 1. Diccionario vacío para llenarlo dinámicamente
     distancias = {}
     
-    # 2. Le asignamos distancia aleatoria a TODO el que exista en el sistema
     for id_rep, stats in repartidores.items():
         nombre_rep = stats["Nombre"]
         distancias[nombre_rep] = round(random.uniform(0.5, 7.5), 1)
     
-    # 3. Algoritmo manual para buscar al más cercano
     repartidor_mas_cercano = None
     distancia_minima = 99.0
     for k in distancias:
@@ -257,7 +261,6 @@ def lista_repartidores():
             distancia_minima = distancias[k]
             repartidor_mas_cercano = k
 
-    # 4. Imprimimos los datos en pantalla leyendo directo de 'repartidores'
     for id_repartidor, stats in repartidores.items():
         nombre_rep = stats["Nombre"]
         puntos_rep = stats.get("Puntos", 0) 
@@ -271,7 +274,6 @@ def lista_repartidores():
         info_bici = "[Eco-Friendly]" if "Bici" in transporte else ""
         recomendado = "¡RECOMENDADO POR CERCANÍA!" if nombre_rep == repartidor_mas_cercano else ""
         
-        # Cambiamos 'stats["puntos"]' por nuestra nueva variable segura 'puntos_rep'
         print(f"{id_repartidor}. {nombre_rep}({cat}), {transporte}{info_bici}->A {dist} km {recomendado}")
         print(f"   puntos:{puntos_rep}, Historial:{exitosos_rep} éxitos/{cancelados_rep} fallas")
         print("-" * 75)
@@ -323,7 +325,6 @@ def cuenta_repartidor():
             print("Error:El ID ya esta en uso por otro repartidor.")
             return         
         try:
-            # Pedimos la edad como entero
             Edad = int(input("Ingrese la Edad (mientras sea mayor a 18 años): ").strip())
         except ValueError:
             print("Error: Debe ingresar un número válido para la edad.")
@@ -422,8 +423,6 @@ def Estadisticas_Rankings():
     
     print("\n RANKING GENERAL DE REPARTIDORES:")
     print("-"*52)
-    # Como no podemos usar listas ni ordenamientos complejos como .sort() o sorted(),
-    # listamos los repartidores directamente desde nuestro diccionario ordenado visualmente.
     for id_repartidor, stats in repartidores.items():
         nombre_rep= stats["Nombre"]
 
@@ -471,11 +470,21 @@ def registrar_pedido():
         
     subtotal=0.0
     productos_texto=""
+    lista_descontados = []
         
     while True:
         nombre_prod = input("Nombre del producto (o '0' para terminar'): ").strip()
         if nombre_prod.lower() == '0':
             break
+
+        if nombre_prod in stock_productos:
+            if stock_productos[nombre_prod] == 0:
+                print(f"No hay stock de {nombre_prod}.")
+                continue
+            else:
+                stock_productos[nombre_prod] -= 1
+                lista_descontados.append(nombre_prod)
+
         try:
             precio_prod = float(input(f"Precio de '{nombre_prod}': $"))
             subtotal+=precio_prod
@@ -492,6 +501,8 @@ def registrar_pedido():
         
     if subtotal==0.0:
         print("\noperacion cancelada:no se agregaron productos.")
+        for p_desc in lista_descontados:
+            stock_productos[p_desc] += 1
         return
 
     print("\nZonas\n1.Resistencia\n2.Barranqueras\n3.Fontana\n4.Puerto Vilelas")
@@ -516,7 +527,6 @@ def registrar_pedido():
 
     total_final=subtotal+costo_envio-(subtotal*descuento_eco)
 
-    # Se agrego fechas de promo y evento especial
     descuento_promo = 0.0
     numero_dia=datetime.now().weekday()
 
@@ -547,7 +557,6 @@ def registrar_pedido():
                     total_final =total_final-(subtotal*descuento_promo)
                     print("\nDescuento aplicado con exito!!")
 
-    # Referencia al mundial, tim payne mi idolo
     premio_mundial = "Ninguno"
     if total_final > 15000:
         premio_mundial = "Llavero de Tim Payne"
@@ -567,7 +576,6 @@ def registrar_pedido():
     print(f"Costo del Envío({zona_elegida}):${costo_envio:.2f}")
     if descuento_promo > 0:
         print(f"Descuento aplicado: {descuento_promo:.2f}%")
-    # Muestra que premio se llevo basicamente
     if premio_mundial != "Ninguno":
         print(f"Se consiguio el llavero de {premio_mundial.replace('Llavero de ', '')}")
         
@@ -611,7 +619,7 @@ def registrar_pedido():
                     print("\n¿En cuantas cuotas desea pagar?")
                     cuo=input("ingrese la cantidad de cuotas (1-12):").strip()
                     if cuo in cuotas:
-                        total_final=total_final-(total_final)*cuotas[cuo] #cuotas arreglado
+                        total_final=total_final-(total_final)*cuotas[cuo]
     
                         premio_mundial = "Ninguno"
                         if total_final > 15000:
@@ -740,6 +748,8 @@ def registrar_pedido():
             print("Error!, su eleccion no esta dentro de las opciones")
 
     else:
+        for p_desc in lista_descontados:
+            stock_productos[p_desc] += 1
         historial_clientes[cliente]-=1
 
 
