@@ -1,3 +1,4 @@
+
 from datetime import datetime
 import random
 
@@ -19,7 +20,9 @@ repartidores={
     101:{"Nombre":"Juan","Edad":25,"Categoria":"ORO","Puntos":22500,"Vehiculo":"Moto","Pedidos_exitosos": 12, "Pedidos_cancelados": 1,"Ganancias_viajes": 6000.0, "Propinas": 450.0, "Resena": "Muy rápido"},
     105:{"Nombre":"Ana","Edad":30,"Categoria":"PLATA","Puntos":110,"Vehiculo":"Bici(Eco)","Pedidos_exitosos": 5, "Pedidos_cancelados":0 ,"Ganancias_viajes": 600.0, "Propinas": 40.0, "Resena": "rápido"}
 }
-
+clientes={
+    2500:{"Nombre":"Maria","Edad":"27","Documento":"27899234","Cant_compras":0,"Puntos_cl":0}
+}
 zonas_opciones = {
     "1": "Resistencia",
     "2": "Barranqueras",
@@ -89,13 +92,6 @@ b_virtual={
     "4":"Naranja x"
 }
 
-stock_productos = {
-    "Pizza": 5,
-    "Hamburguesa": 8,
-    "Lomito": 3,
-    "Empanada": 12,
-    "Gaseosa": 20
-}
 
 def obtener_categoria_texto(puntos):
     if puntos > 750: return "ORO"
@@ -126,6 +122,15 @@ def actualizar_estado(id_pedido,nuevo_estado):
 
 def gamificacion(id_pedido,estado_num):
     pedido=pedidos[id_pedido]
+
+    id_cliente=pedido.get("Id_cli")
+    cliente_encontrado=id_cliente in clientes if id_cliente else False
+
+    if cliente_encontrado:
+        cli=clientes[id_cliente]
+        compras_cliente=cli.get("Cant_compras",0)
+        puntos_cliente=cli.get("Puntos",0)
+        nombre_cli=cli.get("Nombre","Clientes")
 
     id_rep=pedido.get("id_repartidor")
 
@@ -180,7 +185,14 @@ def gamificacion(id_pedido,estado_num):
             rep["Puntos"]=puntos_actuales-30
             print(f"\n¡Penalizacion alcanzada!{nombre_rep} acumulo 10 pedidos cancelados")
     
-    
+        if cliente_encontrado:
+            if puntos_cliente>=15:
+                cli["Puntos_cli"]=puntos_cliente-15
+            else:
+                cli["Puntos_cli"]=0
+            
+            print(f"Disculpe pero por su cancelacion a Delivery se le descontara 15 puntos de buen cliente")
+
     elif estado_num=="4":
         rep["Pedidos_exitosos"]=exitosos_actuales+1
         puntos_actuales+=10
@@ -212,39 +224,81 @@ def gamificacion(id_pedido,estado_num):
         if exitosos_actuales %10==0:
             print(f"\n¡Premio Alcanzado! Bono al Buen Servicio para {nombre_rep}.")
 
+        if cliente_encontrado:
+            cli["Cant_compras"]=compras_cliente+1
+
+            total_factura=pedido.get('precio:prod,0.0')
+            puntos_ganados_cli=int(total_factura/100)
+
+            cli["Puntos_cli"]=puntos_cliente+puntos_ganados_cli
+            print(f"¡Felicitaciones haz ganado mas puntos que suman a tu reputacion de buen Cliente!")
+
+        if cli["Puntos_cli"]>=500:
+            cli["Rango"]="ORO"
+        elif cli["Puntos_cli"]>=200:
+            cli["Rango"]="PLATA"
+        else:
+            cli["Rango"]="BRONCE"
         
 def ver_pedidos():
-    if not pedidos:
-        print("\n[Info] No hay pedidos registrados.")
+    print("Ingrese su id de cliente para ver su historial")
+    try:
+        cl_buscar=int(input().strip())
+    except ValueError:
+        print("Error:El Id debe ser un numero entero.")
         return
-        
-    print("\n  Reporte de operaciones:")
-    for id_p, p in pedidos.items():
-        print("\n")
-        print("-"*70)
-        print(f"Tique Fctura B                                          N°:{id_p}")
-        print(f"                                                        Fecha:{datetime.now().strftime('%d/%m/%y')}")
-        print(f"                                                        Hora:{datetime.now().strftime('%H:%M')}")
-        print("-"*70)
-        print("CONSUMIDOR FINAL")
-        print(f"Cliente:{p.get('cliente','No especificado')}")
-        print(f"Zona:{p.get('zona','No especificado')}")
-        print("-"*70)
-        print(f"Total:${p.get('precio_prod',0.0):.2f}")
-        print(f"{p.get('productos_texto','')}")
-        print("-"*70)
-        print("DETALLES DE ENTREGA/PAGO")
-        print(f"Tarjeta:{p.get('tarjeta','No especificado')} ")
-        print(f"Cantidad de cuotas:{p.get('cant_cuo',0)}")
-        if p.get("regalo")!="Ninguno":
-            print(f"Premio mundial:{p['regalo']}")
-        if p.get("tip_transf")!="":
-             print(f"{p.get('tip_transf','No esppecificado')}                                             Total:{p.get('total',0.0)}")
-        else:
-            print(f"{p.get('tipo_tarj','No esppecificado')}                                               Total:{p.get('total',0.0)}")
-        print(f"Repartidor:{repartidores[id_rep].get('Nombre')}")
-        print(f"Estado: {p.get('estado')}")
+    
+    if cl_buscar in clientes:  
+        datos_cliente=clientes[cl_buscar]
 
+
+        print("\n  Reporte de operaciones:")
+        print("---------------------Informacion de Cliente----------------------")
+        print(f"Id de cliente:{cl_buscar}")
+        print(f"Nombre de cliente:{datos_cliente['Nombre']}")
+        print(f"N° doc:{datos_cliente['Documento']}")
+        print(f"Puntos de reputacion:{datos_cliente['Puntos_cl']}pts")
+        print(f"Rango:{datos_cliente['Rango']}")
+
+        tiene_pedidos=False
+
+
+        for id_p, p in pedidos.items():
+            if p.get('cliente')==datos_cliente['Nombre']:
+                tiene_pedidos=True
+
+                print("\n")
+                print("-"*70)
+                print(f"Tique Fctura B                                          N°:{id_p}")
+                print(f"                                                        Fecha:{datetime.now().strftime('%d/%m/%y')}")
+                print(f"                                                        Hora:{datetime.now().strftime('%H:%M')}")
+                print("-"*70)
+                print("CONSUMIDOR FINAL")
+                print(f"Cliente:{p.get('cliente','No especificado')}")
+                print(f"Zona:{p.get('zona','No especificado')}")
+                print("-"*70)
+                print(f"Total:${p.get('precio_prod',0.0):.2f}")
+                print(f"{p.get('productos_texto','')}")
+                print("-"*70)
+                print("DETALLES DE ENTREGA/PAGO")
+                print(f"Tarjeta:{p.get('tarjeta','No especificado')} ")
+                print(f"Cantidad de cuotas:{p.get('cant_cuo',0)}")
+                if p.get("regalo")!="Ninguno":
+                    print(f"Premio mundial:{p['regalo']}")
+                if p.get("tip_transf")!="":
+                    print(f"{p.get('tip_transf','No esppecificado')}                                    Total:{p.get('total',0.0)}")
+                else:
+                    print(f"{p.get('tipo_tarj','No esppecificado')}                                      Total:{p.get('total',0.0)}")
+                id_rep=pedidos[id_p].get('id_repartidor')
+                print(f"Repartidor:{repartidores[id_rep].get('Nombre')}")
+                print(f"Estado: {p.get('estado')}")
+
+        if not tiene_pedidos:
+            print("\n Registraste cuenta en el sistema, pero aun no realizaste ninguna compra/pedido")   
+    else:
+        print("No se encontro el cliente en el sistema de Delivery")
+        return
+    
 def lista_repartidores():
     print("\n=== Repartidores Disponibles (Con distancia en tiempo Real) ===")
 
@@ -461,242 +515,333 @@ def menu_repartidor()  :
         print("Volviendo a el menu anterior")
     else:
         print("Error!. Eleccion Fuera de Rango")
-
+    
 
 
 def registrar_pedido():
     global contador_id_pedido
-    cliente = input("\nNombre del cliente: ").strip().capitalize()
-        
-    subtotal=0.0
-    productos_texto=""
-    lista_descontados = []
-        
-    while True:
-        nombre_prod = input("Nombre del producto (o '0' para terminar'): ").strip()
-        if nombre_prod.lower() == '0':
-            break
-
-        if nombre_prod in stock_productos:
-            if stock_productos[nombre_prod] == 0:
-                print(f"No hay stock de {nombre_prod}.")
-                continue
-            else:
-                stock_productos[nombre_prod] -= 1
-                lista_descontados.append(nombre_prod)
-
+    print("\n¿Eres cliente de Delivery?\n1.Soy Cliente\n2.No soy cliente\n3.Volver al menu anterior")
+    cl_o=input("seleccione una opcion(1-3):").strip()
+    if cl_o=="1":
         try:
-            precio_prod = float(input(f"Precio de '{nombre_prod}': $"))
-            subtotal+=precio_prod
-            if productos_texto == "":
-                productos_texto=nombre_prod
-            else:
-                productos_texto+=","+nombre_prod
-
+            print("Ingrese id de cliente")
+            id_cl=int(input().strip())
         except ValueError:
-            print("Error: Precio invalido. Producto no Agregado.")
-            
+            print("Error: el Id debe ser un entero")
+            return
+
+    elif cl_o=="2":
+        print("\n----------------Vamos a crear tu cuenta--------------")
+        try:
+            id_cln=int(input("Defina su numero de usuarios:").strip())
+            if id_cln in clientes or id_cln<1000:
+                print("Error: Ese Id ya esta en uso por otro cliente o es id de repartidor")
+                return
+                
+        except ValueError:
+            print("Numero de id invalido")
+            return         
+        try:
+            # Pedimos la edad como entero
+            Ed_cl = int(input("Ingrese la Edad (mientras sea mayor a 18 años): ").strip())
+        except ValueError:
+            print("Error: Debe ingresar un número válido para la edad.")
+            return
         
-    print("\nRegistrando pedido....")
+        if Ed_cl<18:
+            print("Usted es menor de edad por lo tanto no podemos dejarle ser cliente")
+            return
+        cliente = input("\nIngrese su nombre del cliente: ").strip().capitalize()
+
+        if cliente.replace(" ", "").isalpha() and cliente != "":
+            doc=int(input("Ingrese numero de documenmto del cliente: "))
+
+            if doc>3125407:
+                
+                clientes[id_cln]={
+                    "Nombre":cliente,
+                    "Edad":Ed_cl,
+                    "Documento":doc,
+                    "Cant_compras":0,
+                    "Puntos_cl":0,
+                    "Rango": "BRONCE"
+                }
+                print(f"\n¡Cuenta creada con exito! T u id de usuario es:{id_cln}")
+            else:
+                print("Erros!!. Numero de documento no valido")
         
-    if subtotal==0.0:
-        print("\noperacion cancelada:no se agregaron productos.")
-        for p_desc in lista_descontados:
-            stock_productos[p_desc] += 1
+        else:
+            print("Error: El nombre no puede contener números ni caracteres especiales.")
+        
+        print("Volviendo al menu Delivery..")
         return
 
-    print("\nZonas\n1.Resistencia\n2.Barranqueras\n3.Fontana\n4.Puerto Vilelas")
-    z_op=input("seleccione zona(1-4):").strip()
-
-    if z_op in zonas_opciones:
-        zona_elegida=zonas_opciones[z_op]
+       
     else:
-        zona_elegida="Resistencia"
+        print("Volviendo al menu Delivery..")
+        return
         
-    if cliente not in historial_clientes:
-        historial_clientes[cliente]=0
-    historial_clientes[cliente]+=1
-
-    es_frecuente=(historial_clientes[cliente]==3)
-    costo_envio=0.0 if es_frecuente else tabla_zonas[zona_elegida]
-
-    print("\n¿Desea un pedido Eco-Green?\n1. Sí\n2. No")
-    es_eco=(input("selecciones(1-2):").strip()=="1")
-
-    descuento_eco=0.10 if es_eco else 0.0
-
-    total_final=subtotal+costo_envio-(subtotal*descuento_eco)
-
-    descuento_promo = 0.0
-    numero_dia=datetime.now().weekday()
-
-    nombre_dia=dias_semana[numero_dia]
-
-    if nombre_dia in promos_dia:
-        print("\n---------¡¡¡HOY ES DIA DE PROMOS!!!--------")
-        print("\ndesea saber sobre la promo del dia dew hoy?\n1.Sí\n2.No")
-        p_op=input().strip()
-        if p_op=="1":
-            if nombre_dia=="Jueves":
-                print("\n-------DESCUENTOS QUE ALEGRAN TU JUEVES!!------")
-                print("Jueves de promocion, con descuentos del 15%")
-                print("\n¿Desea aplicar el descuento?\n1.Sí\n2.No")
-                des=input().strip()
-                if des=="1":
-                    descuento_promo=0.15
-                    total_final= total_final-(subtotal*descuento_promo)
-                    print("\nDescuento aplicado con exito!!")
-
-            elif nombre_dia=="Sabado" or nombre_dia=="Domingo":
-                print("\n--------DESCUENTO DE LOCOS!-----------")
-                print("Sabados y domingo con descuento de hasta 50% por su compra")
-                print("\n¿Desea aplicar el descuento?\n1.Sí\n2.No")
-                des=input().strip()
-                if des=="1":
-                    descuento_promo=0.5
-                    total_final =total_final-(subtotal*descuento_promo)
-                    print("\nDescuento aplicado con exito!!")
-
-    premio_mundial = "Ninguno"
-    if total_final > 15000:
-        premio_mundial = "Llavero de Tim Payne"
-    elif total_final > 10000:
-        premio_mundial = "Llavero de Messi"
-        
-    print("\n                                               ")
-    print("\n                RESUMEN DE COMPRA              ")
-    print(f"N°:{contador_id_pedido}")
-    print("-"*50)  
-    print(f"Cliente:{cliente}")
-    print(f"productos:{productos_texto}")
-    print(f"subtotal:${subtotal:.2f}")
-    if es_eco:
-        print(f"Descuento Incentivo Verde:{descuento_eco:.2f}%")
-
-    print(f"Costo del Envío({zona_elegida}):${costo_envio:.2f}")
-    if descuento_promo > 0:
-        print(f"Descuento aplicado: {descuento_promo:.2f}%")
-    if premio_mundial != "Ninguno":
-        print(f"Se consiguio el llavero de {premio_mundial.replace('Llavero de ', '')}")
-        
-    print(f"\nTOTAL A PAGAR:${total_final:.2f}")
-    print("-"*50)
-    print("\nDesea seguir con el pago?\n1.Sí\n2.No")
-
-    if input("seleccione (1-2):").strip()=="1":
-        if es_frecuente:
-            historial_clientes[cliente]=0
-
-        distancia_sistema=lista_repartidores()
-
-        ent_usu=input("Numero de id del repartidor que desee:").strip()
-
-        if ent_usu.isdigit():
-            rep_op=int(ent_usu)
-        else:
-            rep_op=101
-
-        if rep_op in repartidores:
-            id_repartidor_elegido=rep_op
-            nombre_rep=repartidores[rep_op]["Nombre"]
-            distancia_final=distancia_sistema[nombre_rep]
-        else:
-            id_repartidor_elegido=repartidores[101]
-            nombre_rep=repartidores[101]["Nombre"]
-            distancia_final=distancia_sistema[nombre_rep]
-
-            
-        print("\n¿Como desea pagar?\n1.tarjeta de credito\n2.tarjeta de debito\n3.Transferencia/efectivo")
-        f_pago=input("seleccione una opcion (1-3):").strip()
-
-        if f_pago in forma_pago:
-            forma_pago[f_pago]+=1
-            if f_pago!="3":
-                print("\nIngrese nombre de su tarjeta\n1.master card\n2.visa\n3.mercado pago\n4.cabal\n5.naranja\n6.bna\n7.bch")
-                marca_tarj=input().strip()
-
-                if marca_tarj in tarjetas:
-                    print("\n¿En cuantas cuotas desea pagar?")
-                    cuo=input("ingrese la cantidad de cuotas (1-12):").strip()
-                    if cuo in cuotas:
-                        total_final=total_final-(total_final)*cuotas[cuo]
     
-                        premio_mundial = "Ninguno"
-                        if total_final > 15000:
-                            premio_mundial = "Llavero de Tim Payne"
-                        elif total_final > 10000:
-                            premio_mundial = "Llavero de Messi"
+    if id_cl in clientes:    
+        subtotal=0.0
+        productos_texto=""
+        descontados_dic = {}
+        cliente=clientes[id_cl]["Nombre"]
 
-                        print(f"\n¡PEDIDO #{contador_id_pedido} REGISTRADO!")
-                        if premio_mundial != "Ninguno":
-                            print(f"¡Te llevas un {premio_mundial} de regalo!")
-                        print(f"Total a pagar ${total_final:.2f} en {cuo} cuotas")
-                        tiempo_est=calcular_tiempo_entrega(distancia_final)
-                        print(f"tiempo estimado en llegar su pedido {tiempo_est}minutos")
-                              
-                        if f_pago=="1":
-                            form_p="Credito"
-                        else:
-                            form_p="Debito"
-                            
-                        fecha_dia = fecha_actual.strftime("%d/%m/%y")
-                        pedidos[contador_id_pedido] = {
-                            "fecha_compra":fecha_dia,
-                            "cliente": cliente,
-                            "productos_texto": productos_texto,
-                            "precio_prod":subtotal,
-                            "tip_transf":"",
-                            "tarjeta":tarjetas[marca_tarj],
-                            "tipo_tarj":form_p,
-                            "cant_cuo":cuo,
-                            "id_repartidor":id_repartidor_elegido,
-                            "zona": zona_elegida,
-                            "costo_envio":costo_envio,
-                            "distancia_repartidor":distancia_final,
-                            "regalo": premio_mundial,
-                            "es_ecogreen":es_eco,
-                            "estado":"Pendiente",
-                            "total": total_final,
-                            "tiempo_estimado":tiempo_est
-                        }
-                        contador_id_pedido+=1
-                    else:
-                        print("Error!,la cantidad de cuotas se excedio el tope(1-12)")
-                else:
-                    print("Error!.La tarjeta ingresada no esta asociada al sistema de modo de pago")
-                    
-            else:
-                print("usted desea pagar en:\n1.Transferencia\n2.Efectivo")
-                tipo_p=int(input())
-
-                premio_mundial = "Ninguno"
-                if total_final > 15000:
-                    premio_mundial = "Llavero de Tim Payne"
-                elif total_final > 10000:
-                    premio_mundial = "Llavero de Messi"
-
-                if tipo_p==1:
-                    print("¿Que billetera virtual desea usar?\n1.Meracdo Pago\n2.Uala\n3.Personal Pay\n4.Naranja X")
-                    billetera=input().strip()
+        print(f"\nBienvenido de vuelta {cliente}")
+        print("¿Que deseas encargar hoy al Equipo Delivery?")
             
-                    if billetera in b_virtual:
-                        
-                        print(f"\n¡PEDIDO #{contador_id_pedido} REGISTRADO!")
+        while True:
+            nombre_prod = input("Nombre del producto (o '0' para terminar'): ").strip()
+            if nombre_prod.lower() == '0':
+                break
+            try:
+                precio_prod = float(input(f"Precio de '{nombre_prod}': $"))
+                subtotal+=precio_prod
+                if productos_texto == "":
+                    productos_texto=nombre_prod
+                else:
+                    productos_texto+=","+nombre_prod
+                
 
+            except ValueError:
+                print("Error: Precio invalido. Producto no Agregado.")
+                
+            
+        print("\nRegistrando pedido....")
+            
+        if subtotal==0.0:
+            print("\noperacion cancelada:no se agregaron productos.")
+
+        print("\nZonas\n1.Resistencia\n2.Barranqueras\n3.Fontana\n4.Puerto Vilelas")
+        z_op=input("seleccione zona(1-4):").strip()
+
+        if z_op in zonas_opciones:
+            zona_elegida=zonas_opciones[z_op]
+        else:
+            zona_elegida="Resistencia"
+        
+        
+            
+        if cliente not in historial_clientes:
+            historial_clientes[cliente]=0
+        historial_clientes[cliente]+=1
+
+        es_frecuente=(historial_clientes[cliente]==3)
+        costo_envio=0.0 if es_frecuente else tabla_zonas[zona_elegida]
+
+        print("\n¿Desea un pedido Eco-Green?\n1. Sí\n2. No")
+        es_eco=(input("selecciones(1-2):").strip()=="1")
+
+        descuento_eco=0.10 if es_eco else 0.0
+
+        total_final=subtotal+costo_envio-(subtotal*descuento_eco)
+
+        descuento_promo = 0.0
+        numero_dia=datetime.now().weekday()
+
+        nombre_dia=dias_semana[numero_dia]
+
+        if nombre_dia in promos_dia:
+            print("\n---------¡¡¡HOY ES DIA DE PROMOS!!!--------")
+            print("\ndesea saber sobre la promo del dia dew hoy?\n1.Sí\n2.No")
+            p_op=input().strip()
+            if p_op=="1":
+                if nombre_dia=="Jueves":
+                    print("\n-------DESCUENTOS QUE ALEGRAN TU JUEVES!!------")
+                    print("Jueves de promocion, con descuentos del 15%")
+                    print("\n¿Desea aplicar el descuento?\n1.Sí\n2.No")
+                    des=input().strip()
+                    if des=="1":
+                        descuento_promo=0.15
+                        total_final= total_final-(subtotal*descuento_promo)
+                        print("\nDescuento aplicado con exito!!")
+
+                elif nombre_dia=="Sabado" or nombre_dia=="Domingo":
+                    print("\n--------DESCUENTO DE LOCOS!-----------")
+                    print("Sabados y domingo con descuento de hasta 50% por su compra")
+                    print("\n¿Desea aplicar el descuento?\n1.Sí\n2.No")
+                    des=input().strip()
+                    if des=="1":
+                        descuento_promo=0.5
+                        total_final =total_final-(subtotal*descuento_promo)
+                        print("\nDescuento aplicado con exito!!")
+
+        premio_mundial = "Ninguno"
+        if total_final > 15000:
+            premio_mundial = "Llavero de Tim Payne"
+        elif total_final > 10000:
+            premio_mundial = "Llavero de Messi"
+            
+        print("\n                                               ")
+        print("                RESUMEN DE COMPRA              ")
+        print(f"N°:{contador_id_pedido}")
+        print("-"*50)  
+        print(f"Cliente:{cliente}")
+        print(f"productos:{productos_texto}")
+        print(f"subtotal:${subtotal:.2f}")
+        if es_eco:
+            print(f"Descuento Incentivo Verde:{descuento_eco:.2f}%")
+
+        print(f"Costo del Envío({zona_elegida}):${costo_envio:.2f}")
+        if descuento_promo > 0:
+            print(f"Descuento aplicado: {descuento_promo:.2f}%")
+        if premio_mundial != "Ninguno":
+            print(f"Se consiguio el llavero de {premio_mundial.replace('Llavero de ', '')}")
+            
+        print(f"\nTOTAL A PAGAR:${total_final:.2f}")
+        print("-"*50)
+        print("\nDesea seguir con el pago?\n1.Sí\n2.No")
+
+        if input("seleccione (1-2):").strip()=="1":
+            if es_frecuente:
+                historial_clientes[cliente]=0
+
+            distancia_sistema=lista_repartidores()
+
+            ent_usu=input("Numero de id del repartidor que desee:").strip()
+
+            if ent_usu.isdigit():
+                rep_op=int(ent_usu)
+            else:
+                rep_op=101
+
+            if rep_op in repartidores:
+                id_repartidor_elegido=rep_op
+                nombre_rep=repartidores[rep_op]["Nombre"]
+                distancia_final=distancia_sistema[nombre_rep]
+            else:
+                id_repartidor_elegido=repartidores[101]
+                nombre_rep=repartidores[101]["Nombre"]
+                distancia_final=distancia_sistema[nombre_rep]
+
+                
+            print("\n¿Como desea pagar?\n1.tarjeta de credito\n2.tarjeta de debito\n3.Transferencia/efectivo")
+            f_pago=input("seleccione una opcion (1-3):").strip()
+
+            if f_pago in forma_pago:
+                forma_pago[f_pago]+=1
+                if f_pago!="3":
+                    print("\nIngrese nombre de su tarjeta\n1.master card\n2.visa\n3.mercado pago\n4.cabal\n5.naranja\n6.bna\n7.bch")
+                    marca_tarj=input().strip()
+
+                    if marca_tarj in tarjetas:
+                        print("\n¿En cuantas cuotas desea pagar?")
+                        cuo=input("ingrese la cantidad de cuotas (1-12):").strip()
+                        if cuo in cuotas:
+                            total_final=total_final-(total_final)*cuotas[cuo]
+        
+                            premio_mundial = "Ninguno"
+                            if total_final > 15000:
+                                premio_mundial = "Llavero de Tim Payne"
+                            elif total_final > 10000:
+                                premio_mundial = "Llavero de Messi"
+
+                            print(f"\n¡PEDIDO #{contador_id_pedido} REGISTRADO!")
+                            if premio_mundial != "Ninguno":
+                                print(f"¡Te llevas un {premio_mundial} de regalo!")
+                            print(f"Total a pagar ${total_final:.2f} en {cuo} cuotas")
+                            tiempo_est=calcular_tiempo_entrega(distancia_final)
+                            print(f"tiempo estimado en llegar su pedido {tiempo_est}minutos")
+                                
+                            if f_pago=="1":
+                                form_p="Credito"
+                            else:
+                                form_p="Debito"
+                                
+                            fecha_dia = fecha_actual.strftime("%d/%m/%y")
+                            pedidos[contador_id_pedido] = {
+                                "fecha_compra":fecha_dia,
+                                "cliente": cliente,
+                                "id_cli":clientes[id_cl],
+                                "productos_texto": productos_texto,
+                                "precio_prod":subtotal,
+                                "tip_transf":"",
+                                "tarjeta":tarjetas[marca_tarj],
+                                "tipo_tarj":form_p,
+                                "cant_cuo":cuo,
+                                "id_repartidor":id_repartidor_elegido,
+                                "zona": zona_elegida,
+                                "costo_envio":costo_envio,
+                                "distancia_repartidor":distancia_final,
+                                "regalo": premio_mundial,
+                                "es_ecogreen":es_eco,
+                                "estado":"Pendiente",
+                                "total": total_final,
+                                "tiempo_estimado":tiempo_est
+                            }
+                            contador_id_pedido+=1
+                        else:
+                            print("Error!,la cantidad de cuotas se excedio el tope(1-12)")
+                    else:
+                        print("Error!.La tarjeta ingresada no esta asociada al sistema de modo de pago")
+                        
+                else:
+                    print("usted desea pagar en:\n1.Transferencia\n2.Efectivo")
+                    tipo_p=int(input())
+
+                    premio_mundial = "Ninguno"
+                    if total_final > 15000:
+                        premio_mundial = "Llavero de Tim Payne"
+                    elif total_final > 10000:
+                        premio_mundial = "Llavero de Messi"
+
+                    if tipo_p==1:
+                        print("¿Que billetera virtual desea usar?\n1.Meracdo Pago\n2.Uala\n3.Personal Pay\n4.Naranja X")
+                        billetera=input().strip()
+                
+                        if billetera in b_virtual:
+                            
+                            print(f"\n¡PEDIDO #{contador_id_pedido} REGISTRADO!")
+
+                            if premio_mundial != "Ninguno":
+                                print(f"¡Te llevas un {premio_mundial} de regalo!")
+
+                            print(f"Total a pagar ${total_final:.2f}")
+                            tiempo_est=calcular_tiempo_entrega(distancia_final) 
+                            print(f"tiempo estimado en llegar su pedido {tiempo_est}minutos")
+
+                            fecha_dia = fecha_actual.strftime("%d/%m/%y")
+                            pedidos[contador_id_pedido] = {
+                                "fecha_compra":fecha_dia,
+                                "cliente": cliente,
+                                "id_cli":clientes[id_cl],
+                                "productos_texto": productos_texto,
+                                "precio_prod":subtotal,
+                                "tip_transf":b_virtual[billetera],
+                                "tarjeta":"",
+                                "tipo_tarj":"",
+                                "cant_cuo":"",
+                                "id_repartidor":id_repartidor_elegido,
+                                "zona": zona_elegida,
+                                "costo_envio":costo_envio,
+                                "distancia_repartidor":distancia_final,
+                                "regalo": premio_mundial,
+                                "es_ecogreen":es_eco,
+                                "estado":"Pendiente",
+                                "total": total_final,
+                                "tiempo_estimado":tiempo_est
+                                }
+                            contador_id_pedido+=1
+                        else:
+                            print("Error!.billetera virtual no aceptada")
+                    else:
+                        print(f"\n¡PEDIDO #{contador_id_pedido} REGISTRADO!")
                         if premio_mundial != "Ninguno":
                             print(f"¡Te llevas un {premio_mundial} de regalo!")
 
                         print(f"Total a pagar ${total_final:.2f}")
                         tiempo_est=calcular_tiempo_entrega(distancia_final) 
                         print(f"tiempo estimado en llegar su pedido {tiempo_est}minutos")
-
+                            
                         fecha_dia = fecha_actual.strftime("%d/%m/%y")
                         pedidos[contador_id_pedido] = {
                             "fecha_compra":fecha_dia,
                             "cliente": cliente,
+                            "id_cli":clientes[id_cl],
                             "productos_texto": productos_texto,
                             "precio_prod":subtotal,
-                            "tip_transf":b_virtual[billetera],
+                            "tip_transf":"efectivo",
                             "tarjeta":"",
                             "tipo_tarj":"",
                             "cant_cuo":"",
@@ -710,48 +855,17 @@ def registrar_pedido():
                             "total": total_final,
                             "tiempo_estimado":tiempo_est
                             }
-                        contador_id_pedido+=1
-                    else:
-                        print("Error!.billetera virtual no aceptada")
-                else:
-                    print(f"\n¡PEDIDO #{contador_id_pedido} REGISTRADO!")
-                    if premio_mundial != "Ninguno":
-                        print(f"¡Te llevas un {premio_mundial} de regalo!")
+                        contador_id_pedido+=1 
 
-                    print(f"Total a pagar ${total_final:.2f}")
-                    tiempo_est=calcular_tiempo_entrega(distancia_final) 
-                    print(f"tiempo estimado en llegar su pedido {tiempo_est}minutos")
-                           
-                    fecha_dia = fecha_actual.strftime("%d/%m/%y")
-                    pedidos[contador_id_pedido] = {
-                        "fecha_compra":fecha_dia,
-                        "cliente": cliente,
-                        "productos_texto": productos_texto,
-                        "precio_prod":subtotal,
-                        "tip_transf":"efectivo",
-                        "tarjeta":"",
-                        "tipo_tarj":"",
-                        "cant_cuo":"",
-                        "id_repartidor":id_repartidor_elegido,
-                        "zona": zona_elegida,
-                        "costo_envio":costo_envio,
-                        "distancia_repartidor":distancia_final,
-                        "regalo": premio_mundial,
-                        "es_ecogreen":es_eco,
-                        "estado":"Pendiente",
-                        "total": total_final,
-                        "tiempo_estimado":tiempo_est
-                        }
-                    contador_id_pedido+=1 
-
+            else:
+                print("Error!, su eleccion no esta dentro de las opciones")
         else:
-            print("Error!, su eleccion no esta dentro de las opciones")
-
+            print("Compra No realizada!!")
+        
+          
     else:
-        for p_desc in lista_descontados:
-            stock_productos[p_desc] += 1
-        historial_clientes[cliente]-=1
-
+        print("Error!. El cliente no es parte de Delivery")
+        return
 
 def cambio_estado():
     if not pedidos:
@@ -829,8 +943,8 @@ def menu_cliente():
 def ejecutar_inicio():
     while True:
         print("\n-----Bienvenido a Sistema Delivery-----")
-        print("1. Ver menu como cliente")
-        print("2. Ver menu como Repartidor")
+        print("1. Menu de cliente")
+        print("2. Menu de Repartidor")
         print("3. Cerrar sesion")
         op = input("Seleccione una opcion (1 o 2): ").strip()
         if op == "1":
