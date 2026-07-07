@@ -1,21 +1,11 @@
-#Funcion externa para manejar fechas y horas.
 from datetime import datetime
-#Funcion externa para utilizar el "azar", basicamente tomar decisiones aleatorias segun se necesite.
 import random
 
-
-#¿Que es un diccionario? Es una estructura basica de python que sirve para almacenar una clave y su valor, ejemplo: Contenido{clave} = valor
-
-
-#Diccionario vacio para agregar pedidos
 pedidos = {}  
-#Contador que es utilizado para asignar un ID unico para cada pedido
 contador_id_pedido = 1
-#Diccionario encargado de manejar los clientes
 historial_clientes = {}  
-#Utilizando la funcion externa, se asigna la fecha que corresponde al presente dia.
 fecha_actual = datetime.today() 
-#Un diccionario que aloja los dias de la semana, utilizado mas adelante
+
 dias_semana={
     0:"Lunes",
     1:"Martes",
@@ -25,19 +15,18 @@ dias_semana={
     5:"Sabado",
     6:"Domingo"
 }
-#Un diccionario que contiene repartidores de ejemplo
 repartidores={
     101:{"Nombre":"Juan","Edad":25,"Categoria":"ORO","Puntos":22500,"Vehiculo":"Moto","Pedidos_exitosos": 12, "Pedidos_cancelados": 1,"Ganancias_viajes": 6000.0, "Propinas": 450.0, "Resena": "Muy rápido"},
     105:{"Nombre":"Ana","Edad":30,"Categoria":"PLATA","Puntos":110,"Vehiculo":"Bici(Eco)","Pedidos_exitosos": 5, "Pedidos_cancelados":0 ,"Ganancias_viajes": 600.0, "Propinas": 40.0, "Resena": "rápido"}
 }
-#Un diccionario que contiene las zonas disponibles para entregas, dentro del rango logico permitido (no hacemos delivery interprovincial
+
 zonas_opciones = {
     "1": "Resistencia",
     "2": "Barranqueras",
     "3": "Fontana",
     "4": "Puerto Vilelas"
 }
-#Este diccionario sirve para controlar las cuotas (ver codigo mas adelante para entender)
+
 cuotas={
     "1":0.0,
     "2":0.50,
@@ -52,33 +41,30 @@ cuotas={
     "11":0.910,
     "12":0.840
 }
-#Formas de pago dentro de un diccionario
+
 forma_pago={
     "1":0,
     "2":0,
     "3":0
 }
-#Diccionario que contiene el 
+
 tabla_zonas = {
     "Resistencia": 1000.0,
     "Barranqueras": 2000.0,
     "Fontana":3500.0,
     "Puerto Vilelas":4000.0
 }
-#Diccionario que contiene los dias que hay promo
 promos_dia={
     "Jueves":"pomo",
     "Sabado":"pomo",
     "Domingo":"pomo"
 }
-#Diccionario que contiene los vehiculos
 vehiculos={
     "1":"Moto",
     "2":"Bici (Eco)",
     "3":"Auto",
     "4":"Ninguno"
 }
-#Diccionario que contiene el estado del repartidor
 Estado={
     "1":"Pendiente",
     "2":"En preparacion",
@@ -86,7 +72,6 @@ Estado={
     "4":"Entregado",
     "5":"Cancelado"
 }
-#Diccionario que contiene las tarjetas disponibles cuando se selecciona la forma de pago correspondiente.
 tarjetas={
     "1":"Mastercad",
     "2":"Visa",
@@ -97,7 +82,6 @@ tarjetas={
     "7":"Banco del Chaco"
 
 }
-#Diccionario para billeteras virtuales
 b_virtual={
     "1":"Mercado pago",
     "2":"Uola",
@@ -105,30 +89,14 @@ b_virtual={
     "4":"Naranja x"
 }
 
-#Un diccionario con las estructuras de Clientes, Stock e ID
-clientes_datos = {
-    "Carlos": {"id_cliente": 1001, "deuda": 0.0, "historial": ["Pizza", "Hamburguesa", "Lomito"], "compras_totales": 3},
-    "Ana": {"id_cliente": 1002, "deuda": 1500.0, "historial": ["Ensalada", "Agua"], "compras_totales": 1},
-    "Pedro": {"id_cliente": 1003, "deuda": 0.0, "historial": [], "compras_totales": 0}
-}
-contador_id_cliente = 1004
-#Diccionario que contiene los productos en stock
-stock_productos = {
-    "Pizza": 5,
-    "Hamburguesa": 8,
-    "Lomito": 3,
-    "Empanada": 12,
-    "Gaseosa": 20
-}
-#Una Funcion que sirve para devolver una categoria dependiendo de los puntos, en caso de no tener suficientes segun el caso, siempre devuelve bronce
 def obtener_categoria_texto(puntos):
     if puntos > 750: return "ORO"
     if puntos >= 500: return "PLATA"
     return "BRONCE"
-#Esta funcion sirve para calcular el tiempo de entrega segun una distancia
+
 def calcular_tiempo_entrega(distancia_repartidor):
     return 5+int(distancia_repartidor*4)
-#Funcion para actualizar el estado del pedido
+
 def actualizar_estado(id_pedido,nuevo_estado):
     pedido=pedidos[id_pedido]
 
@@ -139,20 +107,15 @@ def actualizar_estado(id_pedido,nuevo_estado):
     if nuevo_estado in Estado:
         estado=Estado[nuevo_estado]
     
-        #Botón de arrepentimiento y recargo por cancelación en viaje
-        if estado == "Cancelado" and pedido["estado"] == "En camino":
-            nombre_c = pedido["cliente"]
-            recargo = pedido["total"] * 0.30
-            clientes_datos[nombre_c]["deuda"] += recargo
-            print(f"[Aviso] Pedido cancelado durante el viaje. Se cargó el 30% (${recargo:.2f}) a la deuda de {nombre_c}.")
-
         pedido["estado"]=estado
 
         print(f"estado del pedido #{id_pedido} actualizado a: {estado}")
         return True
     else:
         print("Error! opcion de estado invalida.")
-#
+
+
+
 def gamificacion(id_pedido,estado_num):
     pedido=pedidos[id_pedido]
 
@@ -188,6 +151,7 @@ def gamificacion(id_pedido,estado_num):
    
     nombre_rep=rep.get("Nombre","Repartidor")
 
+    # Usamos .get() con las claves correctas para evitar que explote si es nuevo
     cancelados_actuales = rep.get("Pedidos_cancelados", 0)
     exitosos_actuales = rep.get("Pedidos_exitosos", 0)
     puntos_actuales = rep.get("Puntos", 0)
@@ -202,12 +166,13 @@ def gamificacion(id_pedido,estado_num):
         precio_a_descontar=pedido.get('precio_prod',0.0)
         rep["Ganancias_viajes"]-= precio_a_descontar
         print("\n")
-        print("-"*80)
+        print("-"*50)
         print(f"En el transcurso de la semana se le devolvera el pago total de ${pedido.get('precio_prod',0.0):.2f}")
-        print("-"*80)
+        print("-"*50)
         if rep["Pedidos_cancelados"]==10:
             rep["Puntos"]=puntos_actuales-30
             print(f"\n¡Penalizacion alcanzada!{nombre_rep} acumulo 10 pedidos cancelados")
+    
     
     elif estado_num=="4":
         rep["Pedidos_exitosos"]=exitosos_actuales+1
@@ -239,7 +204,8 @@ def gamificacion(id_pedido,estado_num):
 
         if exitosos_actuales %10==0:
             print(f"\n¡Premio Alcanzado! Bono al Buen Servicio para {nombre_rep}.")
-#Funcion para ver pedidos
+
+        
 def ver_pedidos():
     if not pedidos:
         print("\n[Info] No hay pedidos registrados.")
@@ -254,8 +220,7 @@ def ver_pedidos():
         print(f"                                                        Hora:{datetime.now().strftime('%H:%M')}")
         print("-"*70)
         print("CONSUMIDOR FINAL")
-        ################ "Visualización de ID Cliente agregada en el reporte desde Practica.py"
-        print(f"ID Cliente: {p.get('id_cliente','No asignado')} | Cliente:{p.get('cliente','No especificado')}")
+        print(f"Cliente:{p.get('cliente','No especificado')}")
         print(f"Zona:{p.get('zona','No especificado')}")
         print("-"*70)
         print(f"Total:${p.get('precio_prod',0.0):.2f}")
@@ -270,19 +235,21 @@ def ver_pedidos():
              print(f"{p.get('tip_transf','No esppecificado')}                                             Total:{p.get('total',0.0)}")
         else:
             print(f"{p.get('tipo_tarj','No esppecificado')}                                               Total:{p.get('total',0.0)}")
-        id_rep=pedidos[id_p].get('id_repartidor')
         print(f"Repartidor:{repartidores[id_rep].get('Nombre')}")
         print(f"Estado: {p.get('estado')}")
-#Funcion para ver la lista de repartidores
+
 def lista_repartidores():
     print("\n=== Repartidores Disponibles (Con distancia en tiempo Real) ===")
 
+    # 1. Diccionario vacío para llenarlo dinámicamente
     distancias = {}
     
+    # 2. Le asignamos distancia aleatoria a TODO el que exista en el sistema
     for id_rep, stats in repartidores.items():
         nombre_rep = stats["Nombre"]
         distancias[nombre_rep] = round(random.uniform(0.5, 7.5), 1)
     
+    # 3. Algoritmo manual para buscar al más cercano
     repartidor_mas_cercano = None
     distancia_minima = 99.0
     for k in distancias:
@@ -290,6 +257,7 @@ def lista_repartidores():
             distancia_minima = distancias[k]
             repartidor_mas_cercano = k
 
+    # 4. Imprimimos los datos en pantalla leyendo directo de 'repartidores'
     for id_repartidor, stats in repartidores.items():
         nombre_rep = stats["Nombre"]
         puntos_rep = stats.get("Puntos", 0) 
@@ -303,12 +271,13 @@ def lista_repartidores():
         info_bici = "[Eco-Friendly]" if "Bici" in transporte else ""
         recomendado = "¡RECOMENDADO POR CERCANÍA!" if nombre_rep == repartidor_mas_cercano else ""
         
+        # Cambiamos 'stats["puntos"]' por nuestra nueva variable segura 'puntos_rep'
         print(f"{id_repartidor}. {nombre_rep}({cat}), {transporte}{info_bici}->A {dist} km {recomendado}")
         print(f"   puntos:{puntos_rep}, Historial:{exitosos_rep} éxitos/{cancelados_rep} fallas")
         print("-" * 75)
         
     return distancias
-#Funcion para iniciar como repartidor
+
 def cuenta_repartidor():
     print("\n¿Queres ser parte de este grupo de Deliverys?\n1. Ya soy parte\n2. Quiero unirme\n3. volver al menu anterior")
 
@@ -319,7 +288,9 @@ def cuenta_repartidor():
         try:
             id_repartidor=int(input().strip())
         except ValueError:
+
             print("Error!. el Id ingresado debe ser un numero entero")
+
             return   
 
         if id_repartidor in repartidores:
@@ -336,10 +307,12 @@ def cuenta_repartidor():
             print(f"Ganancias_viajes:{datos['Ganancias_viajes']}")
             print(f"Propinas:{datos['Propinas']}")
             print(f"Ultima Reseña:{datos['Resena']}")
+
         else:
             print("Error!.El Id ingresado no se encuentra en el sistema")
 
     elif c_op=="2":
+
         print("\n---------- ¡Crea tu Cuenta Ya! ----------")
         try:
             id_nuevo=int(input("Defina su numero de usuarios:").strip())
@@ -350,6 +323,7 @@ def cuenta_repartidor():
             print("Error:El ID ya esta en uso por otro repartidor.")
             return         
         try:
+            # Pedimos la edad como entero
             Edad = int(input("Ingrese la Edad (mientras sea mayor a 18 años): ").strip())
         except ValueError:
             print("Error: Debe ingresar un número válido para la edad.")
@@ -383,36 +357,42 @@ def cuenta_repartidor():
             print(f"ID de repartidor:{id_nuevo}")
             print(f"Nombre:{nom_r}")
             print(f"Edad:{Edad}años")
-            print(f"Categoria:{repartidores[id_nuevo].get('Categoria','BRONCE')}")
-            print(f"puntos ganados:{repartidores[id_nuevo].get('Puntos',0.0)}pts")
+            print(f"Categoria:{repartidores[id_nuevo].get("Categoria","BRONCE")}")
+            print(f"puntos ganados:{repartidores[id_nuevo].get("Puntos",0.0)}pts")
             print(f"Vehiculo:{vehiculos[vehi]}")
-            print(f"Pedidos Exitosos:{repartidores[id_nuevo].get('Pedidos_exitosos',0.0)}")
-            print(f"Pedidos cancelados:{repartidores[id_nuevo].get('Pedidos_cancelados',0.0)}")
-            print(f"Ganancias_viajes:{repartidores[id_nuevo].get('Ganancias_viajes')}")
-            print(f"Propinas:{repartidores[id_nuevo].get('Propinas')}")
-            print(f"Ultima Reseña:{repartidores[id_nuevo].get('Resena')}")
+            print(f"Pedidos Exitosos:{repartidores[id_nuevo].get("Pedidos_exitosos",0.0)}")
+            print(f"Pedidos cancelados:{repartidores[id_nuevo].get("Pedidos_cancelados",0.0)}")
+            print(f"Ganancias_viajes:{repartidores[id_nuevo].get("Ganancias_viajes")}")
+            print(f"Propinas:{repartidores[id_nuevo].get("Propinas")}")
+            print(f"Ultima Reseña:{repartidores[id_nuevo].get("Resena")}")
+
+
     elif c_op=="3":
         print("Volviendo al menu anterior.")
     else:
-        print("Error!.Su eleccion no esta dentro de la opciones permitidas")
-#Funcion de promos
+        print("Error!.Su eleccion no esta dentro de la opciones permitidas") 
+
 def promos_horarios():
     config_promos={
         "Almuerzo":"+300 por viaje y +5 puntos extra",
         "Cena Peak":"+$500 por viaje y multiplicador de puntos x2",
         "Trasnocheros":"$700 por viaje (Bono nocturno por seguridad)"
     }
+
     hora_actual=datetime.now().hour
     minutos_actuales=datetime.now().minute
+
     print("*"*50)
-    print("           PROMOS Y BONOS HORARIOS ")
+    print("               PROMOS Y BONOS HORARIOS                    ")
     print("*"*50)
+
     print(f"Hora actual: {hora_actual:02d}:{minutos_actuales:02d}")
     print("-"*50)
     print("Cronograma de Incentivos Diarios:")
     print(f"-11:00 a 14:00[Almuerzo]: {config_promos['Almuerzo']}")
     print(f"-19:00 a 23:00[Cena Peak]: {config_promos['Cena Peak']}")
     print(f"-00:00 a 04:00[Trasnocheros]: {config_promos['Trasnocheros']}")
+
     if 11<=hora_actual<14:
         print("Estas en horario e promo![Turno Almuerzo]")
         print(f"Beneficio activo en tus viajes: {config_promos['Almuerzo']}")
@@ -425,338 +405,427 @@ def promos_horarios():
     else:
         print("actualmente no hay ninguna promo horaria activa.")
         print("proximo turno de bonos: Revisa en cronograma de Arriba")
+    
     print("-"*50)
-#Esta funcion es para un ranking de repartidores, deberia insentivar el esfuerzo
+
 def Estadisticas_Rankings():
     print("="*52)
     print("ESTADÍSTICAS GENERALES DEL SISTEMA")
+
     total_facturado = 0.0
     for p in pedidos.values():
         total_facturado += p.get("total",0.0)
+
     print(f"Cantidad de pedidos totales del local: {len(pedidos)}")
     print(f"Total Facturado en Ventas (con envíos): ${total_facturado:.2f}")
     print("="*52)
-    print("\n   RANKING GENERAL DE REPARTIDORES:")
+    
+    print("\n RANKING GENERAL DE REPARTIDORES:")
     print("-"*52)
+    # Como no podemos usar listas ni ordenamientos complejos como .sort() o sorted(),
+    # listamos los repartidores directamente desde nuestro diccionario ordenado visualmente.
     for id_repartidor, stats in repartidores.items():
         nombre_rep= stats["Nombre"]
+
         puntos_rep=stats.get("puntos",stats.get("Puntos",0))
         edad_rep=stats.get("edad",stats.get("Edad","No especificado"))
         transporte_rep=stats.get("vehiculos",stats.get("Vehiculo","No especificado"))
         resena_rep=stats.get("resena",stats.get("Resena","Sin resena"))
+
         ganancias=stats.get("ganancias_viajes",stats.get("Ganancias_viajes",0.0))
         propinas= stats.get("propinas",stats.get("Propinas",0.0))
         total_neto = ganancias+propinas
+
         cat = obtener_categoria_texto(puntos_rep)
+
+        
         print(f"Nombre:{nombre_rep} \nEdad:{edad_rep} \nCategoria: {cat} \nPuntos: {puntos_rep} pts")
-        print(f"Vehiculo:{transporte_rep} \nReseña destacada: {resena_rep}")
-        print(f"Ganancias Netas (Viajes + Propinas): ${total_neto:.2f}")
-        print("-"*52)
-#Funcion para registrar un pedido
+        print(f"Vehiculo:{transporte_rep}  \nÚltima Reseña: \"{resena_rep}\"")
+        print("-" * 52)
+
+
+def menu_repartidor()  :
+    print("\n--- Menu del Delivery ---")
+    print("1.Cuenta del repartidor")
+    print("2.Promos de Horarios")
+    print("3.Estadisticas y Rankings")
+    print("4. Salir")
+    op2=input("seleccione una opcion (1-4):").strip()
+
+    if  op2=="1":
+        cuenta_repartidor()
+    elif op2=="2":
+        promos_horarios()
+    elif op2=="3":
+        Estadisticas_Rankings()
+    elif op2=="4":
+        print("Volviendo a el menu anterior")
+    else:
+        print("Error!. Eleccion Fuera de Rango")
+
+
+
 def registrar_pedido():
     global contador_id_pedido
-    global contador_id_cliente
-    global pedidos
-
-    print("\nRegistrando pedido....")
     cliente = input("\nNombre del cliente: ").strip().capitalize()
-
-    #Este apartado es para la gestión e identificación de deudas, historial y asignación de ID único
-    if cliente in clientes_datos:
-        id_actual = clientes_datos[cliente]["id_cliente"]
-        deuda_actual = clientes_datos[cliente]["deuda"]
-        if deuda_actual > 0.0:
-            print(f"\n[Aviso] El cliente posee una deuda pendiente de: ${deuda_actual:.2f}")
-            pagar_deuda = input("¿Desea abonar la deuda ahora mismo? (1.Si / 2.No): ").strip()
-            if pagar_deuda == "1":
-                clientes_datos[cliente]["deuda"] = 0.0
-                print("¡Deuda saldada con éxito!")
-            else:
-                print("Operación cancelada. No se pueden procesar pedidos con deudas activas.")
-                return
         
-        historial_actual = clientes_datos[cliente]["historial"]
-        if len(historial_actual) > 0:
-            print(f"\n[Recomendación] Basado en tus gustos anteriores: ¡Te sugerimos una deliciosa {historial_actual[0]} hoy!")
-    else:
-        clientes_datos[cliente] = {"id_cliente": contador_id_cliente, "deuda": 0.0, "historial": [], "compras_totales": 0}
-        id_actual = contador_id_cliente
-        contador_id_cliente += 1
-        print(f"¡Bienvenido! Se te ha asignado el ID único: #{id_actual}")
-
-    subtotal = 0.0
-    productos_texto = ""
-    lista_productos_aux = []
-
-    #Este apartado es una muestra del stock controlado según el inventario disponible.
-    print("\nMenú de Stock Disponible:")
-    for prod, cant in stock_productos.items():
-        print(f"- {prod}: {cant} unidades disponibles")
-
+    subtotal=0.0
+    productos_texto=""
+        
     while True:
-        nombre_prod = input("\nNombre del producto (o '0' para terminar'): ").strip().capitalize()
-        if nombre_prod == '0':
+        nombre_prod = input("Nombre del producto (o '0' para terminar'): ").strip()
+        if nombre_prod.lower() == '0':
             break
-
-        #Aqui se comprueba y detiene el pedido por falta de stock según el inventario,
-        if nombre_prod in stock_productos:
-            if stock_productos[nombre_prod] <= 0:
-                print(f"[Sin Stock] Lo sentimos, no quedan unidades de {nombre_prod}. Elige otro producto.")
-                continue
-        else:
-            print("[Aviso] Este producto no está en la lista de stock controlado, se añadirá de igual forma.")
-
         try:
             precio_prod = float(input(f"Precio de '{nombre_prod}': $"))
-            subtotal += precio_prod
-            lista_productos_aux.append(nombre_prod)
-            
-            #Descuento del producto del inventario de stock.
-            if nombre_prod in stock_productos:
-                stock_productos[nombre_prod] -= 1
-
+            subtotal+=precio_prod
             if productos_texto == "":
-                productos_texto = nombre_prod
+                productos_texto=nombre_prod
             else:
-                productos_texto += "," + nombre_prod
-        except ValueError:
-            print("Error: Precio invalido.")
+                productos_texto+=","+nombre_prod
 
-    if subtotal == 0.0:
-        print("Operación cancelada: No se agregaron productos.")
+        except ValueError:
+            print("Error: Precio invalido. Producto no Agregado.")
+            
+        
+    print("\nRegistrando pedido....")
+        
+    if subtotal==0.0:
+        print("\noperacion cancelada:no se agregaron productos.")
         return
 
     print("\nZonas\n1.Resistencia\n2.Barranqueras\n3.Fontana\n4.Puerto Vilelas")
-    z_op = input("seleccione zona(1-4):").strip()
-    zona_elegida = zonas_opciones[z_op] if z_op in zonas_opciones else "Resistencia"
+    z_op=input("seleccione zona(1-4):").strip()
 
-    clientes_datos[cliente]["compras_totales"] += 1
-    es_frecuente = (clientes_datos[cliente]["compras_totales"] == 3)
-    costo_envio = 0.0 if es_frecuente else tabla_zonas[zona_elegida]
-    total_final = subtotal + costo_envio
+    if z_op in zonas_opciones:
+        zona_elegida=zonas_opciones[z_op]
+    else:
+        zona_elegida="Resistencia"
+        
+    if cliente not in historial_clientes:
+        historial_clientes[cliente]=0
+    historial_clientes[cliente]+=1
 
+    es_frecuente=(historial_clientes[cliente]==3)
+    costo_envio=0.0 if es_frecuente else tabla_zonas[zona_elegida]
+
+    print("\n¿Desea un pedido Eco-Green?\n1. Sí\n2. No")
+    es_eco=(input("selecciones(1-2):").strip()=="1")
+
+    descuento_eco=0.10 if es_eco else 0.0
+
+    total_final=subtotal+costo_envio-(subtotal*descuento_eco)
+
+    # Se agrego fechas de promo y evento especial
     descuento_promo = 0.0
-    print("\n¿Que dia de la semana es hoy?")
-    print("1. Lunes\n2. Martes\n3. Miercoles\n4. Jueves\n5. Viernes\n6. Sabado\n7. Domingo")
-    dia_opc = input("Seleccione una opcion (1-7): ").strip()
-    if dia_opc == "4":
-        descuento_promo = total_final * 0.15
-        total_final -= descuento_promo
-    elif dia_opc == "6" or dia_opc == "7":
-        print("dia 6, mañana 7, six seven")
-        descuento_promo = total_final * 0.067
-        total_final -= descuento_promo
+    numero_dia=datetime.now().weekday()
 
+    nombre_dia=dias_semana[numero_dia]
+
+    if nombre_dia in promos_dia:
+        print("\n---------¡¡¡HOY ES DIA DE PROMOS!!!--------")
+        print("\ndesea saber sobre la promo del dia dew hoy?\n1.Sí\n2.No")
+        p_op=input().strip()
+        if p_op=="1":
+            if nombre_dia=="Jueves":
+                print("\n-------DESCUENTOS QUE ALEGRAN TU JUEVES!!------")
+                print("Jueves de promocion, con descuentos del 15%")
+                print("\n¿Desea aplicar el descuento?\n1.Sí\n2.No")
+                des=input().strip()
+                if des=="1":
+                    descuento_promo=0.15
+                    total_final= total_final-(subtotal*descuento_promo)
+                    print("\nDescuento aplicado con exito!!")
+
+            elif nombre_dia=="Sabado" or nombre_dia=="Domingo":
+                print("\n--------DESCUENTO DE LOCOS!-----------")
+                print("Sabados y domingo con descuento de hasta 50% por su compra")
+                print("\n¿Desea aplicar el descuento?\n1.Sí\n2.No")
+                des=input().strip()
+                if des=="1":
+                    descuento_promo=0.5
+                    total_final =total_final-(subtotal*descuento_promo)
+                    print("\nDescuento aplicado con exito!!")
+
+    # Referencia al mundial, tim payne mi idolo
     premio_mundial = "Ninguno"
     if total_final > 15000:
         premio_mundial = "Llavero de Tim Payne"
     elif total_final > 10000:
         premio_mundial = "Llavero de Messi"
-
-    print("\nCalculando distancias de repartidores...")
-    mapa_distancias = lista_repartidores()
-
-    repartidor_asignado_nombre = "No asignado"
-    repartidor_asignado_id = None
-    distancia_minima = 99.0
-
-    #Asignación exclusiva de repartidores Activos.
-    for id_rep, datos_rep in repartidores.items():
-        if datos_rep.get("Activo", True):
-            nombre_rep = datos_rep["Nombre"]
-            dist_rep = mapa_distancias.get(nombre_rep, 5.0)
-            if dist_rep < distancia_minima:
-                distancia_minima = dist_rep
-                repartidor_asignado_nombre = nombre_rep
-                repartidor_asignado_id = id_rep
-
-    if repartidor_asignado_id is None:
-        print("\n[Aviso Operativo] No hay repartidores con turno activo en este momento. El pedido quedará en espera.")
-        for primer_k in repartidores:
-            repartidor_asignado_id = primer_k
-            repartidor_asignado_nombre = repartidores[primer_k]["Nombre"]
-            break
-
-    tiempo_est = calcular_tiempo_entrega(distancia_minima)
-
-    print(f"\nN°:{contador_id_pedido}")
-    print("-------------------------------------------------")  
-    print(f"ID Cliente: #{id_actual} | Cliente:{cliente}")
+        
+    print("\n                                               ")
+    print("\n                RESUMEN DE COMPRA              ")
+    print(f"N°:{contador_id_pedido}")
+    print("-"*50)  
+    print(f"Cliente:{cliente}")
     print(f"productos:{productos_texto}")
     print(f"subtotal:${subtotal:.2f}")
+    if es_eco:
+        print(f"Descuento Incentivo Verde:{descuento_eco:.2f}%")
+
     print(f"Costo del Envío({zona_elegida}):${costo_envio:.2f}")
     if descuento_promo > 0:
-        print(f"Descuento aplicado: -${descuento_promo:.2f}")
+        print(f"Descuento aplicado: {descuento_promo:.2f}%")
+    # Muestra que premio se llevo basicamente
     if premio_mundial != "Ninguno":
         print(f"Se consiguio el llavero de {premio_mundial.replace('Llavero de ', '')}")
-    
-    print(f"\nTOTAL A PAGAR:${total_final:.2f} | Tiempo de espera estimado: {tiempo_est} min")
-    print("----------------------------------------------------")
+        
+    print(f"\nTOTAL A PAGAR:${total_final:.2f}")
+    print("-"*50)
     print("\nDesea seguir con el pago?\n1.Sí\n2.No")
 
-    if input("seleccione (1-2):").strip() == "1":
+    if input("seleccione (1-2):").strip()=="1":
         if es_frecuente:
-            clientes_datos[cliente]["compras_totales"] = 0
-        
-        print("\n¿Como desea pagar?\n1.tarjeta de credito\n2.tarjeta de debito\n3.efectivo\n4.Billetera Virtual\n5.Transferencia Bancaria")
-        f_pago = input("seleccione una opcion (1-5):").strip()
+            historial_clientes[cliente]=0
 
-        t_usada = ""
-        c_cuo = 0
-        tipo_t = ""
-        t_trans = ""
+        distancia_sistema=lista_repartidores()
 
-        if f_pago == "1":
-            print("Seleccione tarjeta:")
-            for k,v in tarjetas.items(): print(f"{k}.{v}")
-            t_usada = tarjetas.get(input().strip(), "No especificada")
+        ent_usu=input("Numero de id del repartidor que desee:").strip()
+
+        if ent_usu.isdigit():
+            rep_op=int(ent_usu)
+        else:
+            rep_op=101
+
+        if rep_op in repartidores:
+            id_repartidor_elegido=rep_op
+            nombre_rep=repartidores[rep_op]["Nombre"]
+            distancia_final=distancia_sistema[nombre_rep]
+        else:
+            id_repartidor_elegido=repartidores[101]
+            nombre_rep=repartidores[101]["Nombre"]
+            distancia_final=distancia_sistema[nombre_rep]
+
             
-            cuo = input("ingrese la cantidad de cuotas (1-12):").strip()
-            if cuo in cuotas:
-                c_cuo = int(cuo)
-                total_final = total_final + (total_final) * cuotas[cuo]
-                if total_final > 15000: premio_mundial = "Llavero de Tim Payne"
-                elif total_final > 10000: premio_mundial = "Llavero de Messi"
-            tipo_t = "tarjeta de credito"
+        print("\n¿Como desea pagar?\n1.tarjeta de credito\n2.tarjeta de debito\n3.Transferencia/efectivo")
+        f_pago=input("seleccione una opcion (1-3):").strip()
 
-        elif f_pago == "2":
-            print("Seleccione tarjeta de Debito:")
-            for k,v in tarjetas.items(): print(f"{k}.{v}")
-            t_usada = tarjetas.get(input().strip(), "No especificada")
-            tipo_t = "tarjeta de debito"
+        if f_pago in forma_pago:
+            forma_pago[f_pago]+=1
+            if f_pago!="3":
+                print("\nIngrese nombre de su tarjeta\n1.master card\n2.visa\n3.mercado pago\n4.cabal\n5.naranja\n6.bna\n7.bch")
+                marca_tarj=input().strip()
 
-        elif f_pago == "3":
-            tipo_t = "efectivo"
+                if marca_tarj in tarjetas:
+                    print("\n¿En cuantas cuotas desea pagar?")
+                    cuo=input("ingrese la cantidad de cuotas (1-12):").strip()
+                    if cuo in cuotas:
+                        total_final=total_final-(total_final)*cuotas[cuo] #cuotas arreglado
+    
+                        premio_mundial = "Ninguno"
+                        if total_final > 15000:
+                            premio_mundial = "Llavero de Tim Payne"
+                        elif total_final > 10000:
+                            premio_mundial = "Llavero de Messi"
 
-        elif f_pago == "4":
-            print("Seleccione Billetera Virtual:")
-            for k,v in b_virtual.items(): print(f"{k}.{v}")
-            t_usada = b_virtual.get(input().strip(), "No especificada")
-            tipo_t = "Billetera Virtual"
+                        print(f"\n¡PEDIDO #{contador_id_pedido} REGISTRADO!")
+                        if premio_mundial != "Ninguno":
+                            print(f"¡Te llevas un {premio_mundial} de regalo!")
+                        print(f"Total a pagar ${total_final:.2f} en {cuo} cuotas")
+                        tiempo_est=calcular_tiempo_entrega(distancia_final)
+                        print(f"tiempo estimado en llegar su pedido {tiempo_est}minutos")
+                              
+                        if f_pago=="1":
+                            form_p="Credito"
+                        else:
+                            form_p="Debito"
+                            
+                        fecha_dia = fecha_actual.strftime("%d/%m/%y")
+                        pedidos[contador_id_pedido] = {
+                            "fecha_compra":fecha_dia,
+                            "cliente": cliente,
+                            "productos_texto": productos_texto,
+                            "precio_prod":subtotal,
+                            "tip_transf":"",
+                            "tarjeta":tarjetas[marca_tarj],
+                            "tipo_tarj":form_p,
+                            "cant_cuo":cuo,
+                            "id_repartidor":id_repartidor_elegido,
+                            "zona": zona_elegida,
+                            "costo_envio":costo_envio,
+                            "distancia_repartidor":distancia_final,
+                            "regalo": premio_mundial,
+                            "es_ecogreen":es_eco,
+                            "estado":"Pendiente",
+                            "total": total_final,
+                            "tiempo_estimado":tiempo_est
+                        }
+                        contador_id_pedido+=1
+                    else:
+                        print("Error!,la cantidad de cuotas se excedio el tope(1-12)")
+                else:
+                    print("Error!.La tarjeta ingresada no esta asociada al sistema de modo de pago")
+                    
+            else:
+                print("usted desea pagar en:\n1.Transferencia\n2.Efectivo")
+                tipo_p=int(input())
 
-        elif f_pago == "5":
-            print("Seleccione a que banco transferir:")
-            print("1.Banco nacion\n2.Banco del Chaco")
-            op_b = input().strip()
-            t_trans = "Banco Nacion" if op_b == "1" else "Banco del Chaco"
-            tipo_t = "Transferencia Bancaria"
+                premio_mundial = "Ninguno"
+                if total_final > 15000:
+                    premio_mundial = "Llavero de Tim Payne"
+                elif total_final > 10000:
+                    premio_mundial = "Llavero de Messi"
 
-        if f_pago in ["1","2","3","4","5"]:
-            print(f"\n¡PEDIDO #{contador_id_pedido} REGISTRADO!")
-            if premio_mundial != "Ninguno":
-                print(f"¡Te llevas un {premio_mundial} de regalo!")
+                if tipo_p==1:
+                    print("¿Que billetera virtual desea usar?\n1.Meracdo Pago\n2.Uala\n3.Personal Pay\n4.Naranja X")
+                    billetera=input().strip()
             
-            fecha_dia = fecha_actual.strftime("%d/%m/%y")
-            pedidos[contador_id_pedido] = {
-                "id_cliente": id_actual,
-                "cliente": cliente,
-                "zona": zona_elegida,
-                "productos_texto": productos_texto,
-                "precio_prod": subtotal,
-                "total": total_final,
-                "fecha": fecha_dia,
-                "regalo": premio_mundial,
-                "estado": "Pendiente",
-                "id_repartidor": repartidor_asignado_id,
-                "repartidor": repartidor_asignado_nombre,
-                "tarjeta": t_usada,
-                "cant_cuo": c_cuo,
-                "tipo_tarj": tipo_t,
-                "tip_transf": t_trans
-            }
-            for p_item in lista_productos_aux:
-                clientes_datos[cliente]["historial"].append(p_item)
-            contador_id_pedido += 1
+                    if billetera in b_virtual:
+                        
+                        print(f"\n¡PEDIDO #{contador_id_pedido} REGISTRADO!")
+
+                        if premio_mundial != "Ninguno":
+                            print(f"¡Te llevas un {premio_mundial} de regalo!")
+
+                        print(f"Total a pagar ${total_final:.2f}")
+                        tiempo_est=calcular_tiempo_entrega(distancia_final) 
+                        print(f"tiempo estimado en llegar su pedido {tiempo_est}minutos")
+
+                        fecha_dia = fecha_actual.strftime("%d/%m/%y")
+                        pedidos[contador_id_pedido] = {
+                            "fecha_compra":fecha_dia,
+                            "cliente": cliente,
+                            "productos_texto": productos_texto,
+                            "precio_prod":subtotal,
+                            "tip_transf":b_virtual[billetera],
+                            "tarjeta":"",
+                            "tipo_tarj":"",
+                            "cant_cuo":"",
+                            "id_repartidor":id_repartidor_elegido,
+                            "zona": zona_elegida,
+                            "costo_envio":costo_envio,
+                            "distancia_repartidor":distancia_final,
+                            "regalo": premio_mundial,
+                            "es_ecogreen":es_eco,
+                            "estado":"Pendiente",
+                            "total": total_final,
+                            "tiempo_estimado":tiempo_est
+                            }
+                        contador_id_pedido+=1
+                    else:
+                        print("Error!.billetera virtual no aceptada")
+                else:
+                    print(f"\n¡PEDIDO #{contador_id_pedido} REGISTRADO!")
+                    if premio_mundial != "Ninguno":
+                        print(f"¡Te llevas un {premio_mundial} de regalo!")
+
+                    print(f"Total a pagar ${total_final:.2f}")
+                    tiempo_est=calcular_tiempo_entrega(distancia_final) 
+                    print(f"tiempo estimado en llegar su pedido {tiempo_est}minutos")
+                           
+                    fecha_dia = fecha_actual.strftime("%d/%m/%y")
+                    pedidos[contador_id_pedido] = {
+                        "fecha_compra":fecha_dia,
+                        "cliente": cliente,
+                        "productos_texto": productos_texto,
+                        "precio_prod":subtotal,
+                        "tip_transf":"efectivo",
+                        "tarjeta":"",
+                        "tipo_tarj":"",
+                        "cant_cuo":"",
+                        "id_repartidor":id_repartidor_elegido,
+                        "zona": zona_elegida,
+                        "costo_envio":costo_envio,
+                        "distancia_repartidor":distancia_final,
+                        "regalo": premio_mundial,
+                        "es_ecogreen":es_eco,
+                        "estado":"Pendiente",
+                        "total": total_final,
+                        "tiempo_estimado":tiempo_est
+                        }
+                    contador_id_pedido+=1 
+
         else:
             print("Error!, su eleccion no esta dentro de las opciones")
+
     else:
-        clientes_datos[cliente]["compras_totales"] -= 1
-        #Devolución automática al inventario de stock si la operación se cancela
-        for p_item in lista_productos_aux:
-            if p_item in stock_productos:
-                stock_productos[p_item] += 1
-#Funcion para cambiar el estado del pedido modo empleado
+        historial_clientes[cliente]-=1
+
+
 def cambio_estado():
     if not pedidos:
         print("no hay pedidos para modificar")
         return
     try:
-        id_buscar = int(input("Numero de compra:"))
+        id_buscar=int(input("Numero de compra:"))
+
         if id_buscar in pedidos:
+            print("\n")
+            print("-"*70)
+            print(f"Tique Fctura B                                           N°:{id_buscar}")
+            print(f"                                                         Fecha:{datetime.now().strftime("%d/%m/%y")}")
+            print(f"                                                         Hora:{datetime.now().strftime("%H:%M")}")
+            print("-"*70)
+            print("CONSUMIDOR FINAL")
+            print("Domi:")
+            print("Barr:")
+            print("-"*70)
+            print(f"Total:${pedidos[id_buscar].get('precio_prod',0.0):.2f}")
+            print("RECIBI/MOS")
+            print(f"Tarjeta:{pedidos[id_buscar].get('tarjeta','No especificado')} ")
+            print(f"Cantidad de cuotas:{pedidos[id_buscar].get('cant_cuo',0)}")
+            if pedidos[id_buscar].get("regalo")!="Ninguno":
+                print(f"Premio mundial:{pedidos[id_buscar].get('regalo','Ninguno')}")
+
+            if pedidos[id_buscar].get("tip_transf")!="":
+                print(f"{pedidos[id_buscar].get('tip_transf','No esppecificado')}                                               Total:{pedidos[id_buscar].get('total',0.0)}")
+            else:
+                print(f"{pedidos[id_buscar].get('tipo_tarj','No esppecificado')}                                                Total:{pedidos[id_buscar].get('total',0.0)}")
+            id_rep=pedidos[id_buscar].get('id_repartidor')
+            print(f"Repartidor:{repartidores[id_rep].get('Nombre')}")
+            print(f"Estado: {pedidos[id_buscar].get('estado')}")
+
+            print("REGIMEN DE TRANSFERENCIA FISCAL AL CONSUMIDOR")
+
             print("\nEstados:\n1.Pendiente\n2.En preparacion\n3.En camino\n4.Entregado \n5.Cancelado")
-            nuevo_est = input("seleccione nuevo estado (1-5):").strip()
-            if actualizar_estado(id_buscar, nuevo_est):
-                gamificacion(id_buscar, nuevo_est)
+            nuevo_est=input("seleccione nuevo estado (1-5):").strip()
+
+            if actualizar_estado(id_buscar,nuevo_est):
+                    
+                gamificacion(id_buscar,nuevo_est)
+
         else:
+
             print("No existe esa compra")
+                
     except ValueError:
-        print("Numero de compra Invalido")
-#Funcion para el menu de clientes.
+        print("Numero de compra Invalido")   
+
+
 def menu_cliente():
-    while True:
-        print("\n--- Menu del Delivery ---")
-        print("1. Registrar nuevo pedido")
-        print("2. Historial de pedidos")
-        print("3. Cambiar estado de un pedido")
-        print("4. Salir")
+    global contador_id_pedido 
+    global pedidos 
+    
+    print("\n--- Menu del Delivery ---")
+    print("1. Registrar nuevo pedido")
+    print("2. Historial de pedidos")
+    print("3. Cambiar estado de un pedido")
+    print("4. Salir")
 
-        opcion = input("Seleccione una opcion (1-4): ").strip()
+    opcion = input("Seleccione una opcion (1-4): ").strip()
 
-        if opcion == "1":
-            registrar_pedido()
-        elif opcion == "2":
-            ver_pedidos()
-        elif opcion == "3":
-            cambio_estado()
-        elif opcion == "4":
-            print("Volviendo al menu de inicio.")
-            break
-        else:
-            print("[Error] Opcion invalida. Intente de nuevo.")
+    if opcion == "1":
+        registrar_pedido()
+    elif opcion == "2":
+        ver_pedidos()
+    elif opcion == "3":
+        cambio_estado()
+    elif opcion == "4":
+        print("Volviendo al menu de inicio.")
+    else:
+        print("[Error] Opcion invalida. Intente de nuevo.")
 
-#Menú y panel de control de disponibilidad real para Repartidores
-def menu_repartidor():
-    while True:
-        print("\n--- Panel de Control de Repartidores ---")
-        print("1. Ver Repartidores en Turno y cambiar disponibilidad")
-        print("2. Ver promos y bonos horarios")
-        print("3. Ver Estadisticas y Rankings del local")
-        print("4. Administrar cuenta/Crear cuenta repartidor")
-        print("5. Volviendo al menu de inicio")
-        
-        op_rep = input("Seleccione una opción: ").strip()
-        if op_rep == "1":
-            for id_rep, r in repartidores.items():
-                estado_turno = "ACTIVO" if r.get("Activo", True) else "PASIVO"
-                print(f"ID: {id_rep} | Nombre: {r['Nombre']} | Estado: {estado_turno}")
-            try:
-                cambiar = int(input("\nIngrese el ID del repartidor para cambiar su disponibilidad (o 0 para salir): "))
-                if cambiar in repartidores:
-                    repartidores[cambiar]["Activo"] = not repartidores[cambiar].get("Activo", True)
-                    print(f"El estado de {repartidores[cambiar]['Nombre']} fue modificado con éxito.")
-            except ValueError:
-                print("Entrada inválida.")
-        elif op_rep == "2":
-            promos_horarios()
-        elif op_rep == "3":
-            Estadisticas_Rankings()
-        elif op_rep == "4":
-            cuenta_repartidor()
-        elif op_rep == "5":
-            break
-        else:
-            print("Opción inválida.")
-#Funcion para ejecutar el inicio del programita.
 def ejecutar_inicio():
     while True:
         print("\n-----Bienvenido a Sistema Delivery-----")
         print("1. Ver menu como cliente")
         print("2. Ver menu como Repartidor")
         print("3. Cerrar sesion")
-        op = input("Seleccione una opcion (1-3): ").strip()
+        op = input("Seleccione una opcion (1 o 2): ").strip()
         if op == "1":
             menu_cliente()
-        elif op == "2":
+        elif op=="2":
             menu_repartidor()     
         elif op == "3":
             print("Finalizando ejecucion del programa.")
@@ -764,5 +833,5 @@ def ejecutar_inicio():
         else:
             print("[Error] Opcion invalida. intente de nuevo.")
 
-if __name__ == "__main__":
+if __name__ == "__main__":     
     ejecutar_inicio()
