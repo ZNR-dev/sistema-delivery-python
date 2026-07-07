@@ -1,4 +1,3 @@
-
 from datetime import datetime
 import random
 
@@ -18,10 +17,19 @@ dias_semana={
 }
 repartidores={
     101:{"Nombre":"Juan","Edad":25,"Categoria":"ORO","Puntos":22500,"Vehiculo":"Moto","Pedidos_exitosos": 12, "Pedidos_cancelados": 1,"Ganancias_viajes": 6000.0, "Propinas": 450.0, "Resena": "Muy rápido"},
-    105:{"Nombre":"Ana","Edad":30,"Categoria":"PLATA","Puntos":110,"Vehiculo":"Bici(Eco)","Pedidos_exitosos": 5, "Pedidos_cancelados":0 ,"Ganancias_viajes": 600.0, "Propinas": 40.0, "Resena": "rápido"}
+    105:{"Nombre":"Ana","Edad":30,"Categoria":"PLATA","Puntos":550,"Vehiculo":"Bici(Eco)","Pedidos_exitosos": 5, "Pedidos_cancelados":0 ,"Ganancias_viajes": 600.0, "Propinas": 45.0, "Resena": "Rápido"},
+    105:{"Nombre":"Maria","Edad":45,"Categoria":"BRONCE","Puntos":100,"Vehiculo":"Bici(Eco)","Pedidos_exitosos": 4, "Pedidos_cancelados":1 ,"Ganancias_viajes": 456.0, "Propinas": 40.0, "Resena": "Amable"},
+    
 }
 clientes={
-    2500:{"Nombre":"Maria","Edad":"27","Documento":"27899234","Cant_compras":0,"Puntos_cl":0}
+    2500:{"Nombre":"Maria","Edad":"27","Documento":"27899234","Cant_compras":0,"Puntos_cl":0,"Rango":"PLATA"},
+    4044:{"Nombre":"Juan","Edad":"34","Documento":"36489560","Cant_compras":0,"Puntos_cl":0,"Rango":"BRONCE"},
+    3504:{"Nombre":"Malena","Edad":"25","Documento":"41473800","Cant_compras":0,"Puntos_cl":0,"Rango":"BRONCE"},
+    2004:{"Nombre":"Juan","Edad":"30","Documento":"37003509","Cant_compras":0,"Puntos_cl":0,"Rango":"PLATA"},
+    5566:{"Nombre":"Juan","Edad":"22","Documento":"42748509","Cant_compras":0,"Puntos_cl":0,"Rango":"ORO"},
+    1010:{"Nombre":"Juan","Edad":"60","Documento":"23747305","Cant_compras":0,"Puntos_cl":0,"Rango":"ORO"},
+    2020:{"Nombre":"Juan","Edad":"51","Documento":"25543788","Cant_compras":0,"Puntos_cl":0,"Rango":"PLATA"},
+    
 }
 zonas_opciones = {
     "1": "Resistencia",
@@ -98,6 +106,11 @@ def obtener_categoria_texto(puntos):
     if puntos >= 500: return "PLATA"
     return "BRONCE"
 
+def obtener_rango(puntos_cli):
+    if puntos_cli>=500: return "ORO"
+    elif puntos_cli>=200:return "PLATA"
+    return"BRONCE"
+
 def calcular_tiempo_entrega(distancia_repartidor):
     return 5+int(distancia_repartidor*4)
 
@@ -123,13 +136,13 @@ def actualizar_estado(id_pedido,nuevo_estado):
 def gamificacion(id_pedido,estado_num):
     pedido=pedidos[id_pedido]
 
-    id_cliente=pedido.get("Id_cli")
+    id_cliente=pedido.get("id_cli")
     cliente_encontrado=id_cliente in clientes if id_cliente else False
 
     if cliente_encontrado:
         cli=clientes[id_cliente]
         compras_cliente=cli.get("Cant_compras",0)
-        puntos_cliente=cli.get("Puntos",0)
+        puntos_cliente=cli.get("Puntos_cl",0)
         nombre_cli=cli.get("Nombre","Clientes")
 
     id_rep=pedido.get("id_repartidor")
@@ -187,9 +200,9 @@ def gamificacion(id_pedido,estado_num):
     
         if cliente_encontrado:
             if puntos_cliente>=15:
-                cli["Puntos_cli"]=puntos_cliente-15
+                cli["Puntos_cl"]=puntos_cliente-15
             else:
-                cli["Puntos_cli"]=0
+                cli["Puntos_cl"]=0
             
             print(f"Disculpe pero por su cancelacion a Delivery se le descontara 15 puntos de buen cliente")
 
@@ -204,7 +217,7 @@ def gamificacion(id_pedido,estado_num):
         
         rep["Puntos"]=puntos_actuales
 
-        rep["Ganancia_viajes"]= ganancias_actuales+500.0
+        rep["Ganancias_viajes"]= ganancias_actuales+500.0
 
         print("¿Desea dejarle propina?\n1.Sí\nNo")
 
@@ -227,18 +240,13 @@ def gamificacion(id_pedido,estado_num):
         if cliente_encontrado:
             cli["Cant_compras"]=compras_cliente+1
 
-            total_factura=pedido.get('precio:prod,0.0')
+            total_factura=pedido.get('precio_prod',0.0)
             puntos_ganados_cli=int(total_factura/100)
 
             cli["Puntos_cli"]=puntos_cliente+puntos_ganados_cli
             print(f"¡Felicitaciones haz ganado mas puntos que suman a tu reputacion de buen Cliente!")
 
-        if cli["Puntos_cli"]>=500:
-            cli["Rango"]="ORO"
-        elif cli["Puntos_cli"]>=200:
-            cli["Rango"]="PLATA"
-        else:
-            cli["Rango"]="BRONCE"
+        cli["Rango"]=obtener_rango(cli["Puntos_cl"])
         
 def ver_pedidos():
     print("Ingrese su id de cliente para ver su historial")
@@ -335,9 +343,12 @@ def lista_repartidores():
     return distancias
 
 def cuenta_repartidor():
-    print("\n¿Queres ser parte de este grupo de Deliverys?\n1. Ya soy parte\n2. Quiero unirme\n3. volver al menu anterior")
+    print("\n¿Queres ser parte de este grupo de Deliverys?")
+    print("             1. Ya soy parte")
+    print("             2. Quiero unirme")
+    print("             3. volver al menu anterior")
 
-    c_op=input("seleccione una opcion (1-3):").strip()
+    c_op=input("\nseleccione una opcion (1-3):").strip()
 
     if c_op=="1":
         print("ingrese su Id de usuario:")
@@ -350,8 +361,10 @@ def cuenta_repartidor():
             return   
 
         if id_repartidor in repartidores:
-            print("----------Tu Informacion----------")
             datos=repartidores[id_repartidor]
+            print("\n")
+            print(f"              ¡HOLA {datos['Nombre']}!")
+            print("--------------Tu Informacion-------------")
             print(f"ID de repartidor:{id_repartidor}")
             print(f"Nombre:{datos['Nombre']}")
             print(f"Edad:{datos['Edad']}años")
@@ -365,8 +378,9 @@ def cuenta_repartidor():
             print(f"Ultima Reseña:{datos['Resena']}")
 
         else:
+            print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
             print("Error!.El Id ingresado no se encuentra en el sistema")
-
+            print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
     elif c_op=="2":
 
         print("\n---------- ¡Crea tu Cuenta Ya! ----------")
@@ -376,23 +390,30 @@ def cuenta_repartidor():
                 print("Error: Ese Id ya esta en uso por otro repartidor")
                 return
         except ValueError:
+            print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
             print("Error:El ID ya esta en uso por otro repartidor.")
+            print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
             return         
         try:
             Edad = int(input("Ingrese la Edad (mientras sea mayor a 18 años): ").strip())
         except ValueError:
+            print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
             print("Error: Debe ingresar un número válido para la edad.")
+            print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
             return
 
         if Edad<18:
-            print("Usted es un menor de edad.No admitimos el trabajo para menores de 18 años")
+            print("¡Usted es un menor de edad, Nuestra politica NO ADMITE el trabajo para menores de 18 años!")
         else:
             print("Ingrese nombre:")
             nom_r=input().strip()
 
-            print("Ingrese vehiculo con el que trabajara ")
-            print("1.Moto\n2.Bici(Eco)\n3.Auto\nNinguno")
-            vehi=input("seleccione una opcion(1-4):").strip()
+            print("\nIngrese vehiculo con el que trabajara ")
+            print("             1.Moto")
+            print("             2.Bici(Eco)")
+            print("             3.Auto")
+            print("             4.Ninguno")
+            vehi=input("\nseleccione una opcion(1-4):").strip()
 
             repartidores[id_nuevo]={
                 "Nombre":nom_r,
@@ -407,8 +428,10 @@ def cuenta_repartidor():
                 "Resena":""
             }        
 
-            print(f"\n¡Cuenta creada con exito para {nom_r}! Bienvenido a Delivery")
-            print("----------Tu Informacion----------")
+            print(f"\n¡Cuenta creada con exito para {nom_r}!")
+            print("\n")
+            print("_______________¡Bienvenido a Delivery!_____________")
+            print("         ----------Tu Informacion----------")
             print(f"ID de repartidor:{id_nuevo}")
             print(f"Nombre:{nom_r}")
             print(f"Edad:{Edad}años")
@@ -498,12 +521,15 @@ def Estadisticas_Rankings():
 
 
 def menu_repartidor()  :
-    print("\n--- Menu del Delivery ---")
-    print("1.Cuenta del repartidor")
-    print("2.Promos de Horarios")
-    print("3.Estadisticas y Rankings")
-    print("4. Salir")
-    op2=input("seleccione una opcion (1-4):").strip()
+    print("\n")
+    print("-"*50)
+    print("♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦Menu del Delivery♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦")
+    print("                 1.Cuenta Personal")
+    print("                 2.Promos de Horarios")
+    print("                 3.Estadisticas y Rankings")
+    print("                 4. Salir")
+    print("-"*50)
+    op2=input("\nseleccione una opcion (1-4):").strip()
 
     if  op2=="1":
         cuenta_repartidor()
@@ -566,7 +592,7 @@ def registrar_pedido():
                     "Puntos_cl":0,
                     "Rango": "BRONCE"
                 }
-                print(f"\n¡Cuenta creada con exito! Tu id de usuario es:{id_cln}")
+                print(f"\n¡Cuenta creada con exito! Tu id de cliente es:{id_cln}")
             else:
                 print("Erros!!. Numero de documento no valido")
         
@@ -942,11 +968,14 @@ def menu_cliente():
 
 def ejecutar_inicio():
     while True:
-        print("\n-----Bienvenido a Sistema Delivery-----")
-        print("1. Menu de cliente")
-        print("2. Menu de Repartidor")
-        print("3. Cerrar sesion")
-        op = input("Seleccione una opcion (1 o 2): ").strip()
+        print("\n")
+        print("-"*50)
+        print("♦♦♦♦♦♦♦♦♦♦Bienvenido a Sistema Delivery♦♦♦♦♦♦♦♦♦♦")
+        print("             1. Menu de cliente")
+        print("             2. Menu de Repartidor")
+        print("             3. Cerrar sesion")
+        print("-"*50)
+        op = input("\nSeleccione una opcion (1 o 2): ").strip()
         if op == "1":
             menu_cliente()
         elif op=="2":
