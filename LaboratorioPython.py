@@ -1,3 +1,4 @@
+
 from datetime import datetime
 import random
 
@@ -129,8 +130,9 @@ def actualizar_estado(id_pedido,nuevo_estado):
         print(f"estado del pedido #{id_pedido} actualizado a: {estado}")
         return True
     else:
-        print("Error! opcion de estado invalida.")
-
+        print("\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+        print("         Error! opcion de estado invalida.")
+        print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
 
 
 def gamificacion(id_pedido,estado_num):
@@ -196,16 +198,17 @@ def gamificacion(id_pedido,estado_num):
         print("-"*50)
         if rep["Pedidos_cancelados"]==10:
             rep["Puntos"]=puntos_actuales-30
-            print(f"\n¡Penalizacion alcanzada!{nombre_rep} acumulo 10 pedidos cancelados")
-    
+            print("\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+            print(f"¡Penalizacion alcanzada!{nombre_rep} acumulo 10 pedidos cancelados")
+            print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
         if cliente_encontrado:
             if puntos_cliente>=15:
                 cli["Puntos_cl"]=puntos_cliente-15
             else:
                 cli["Puntos_cl"]=0
-            
-            print(f"Disculpe pero por su cancelacion a Delivery se le descontara 15 puntos de buen cliente")
-
+            print("\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+            print(f"¡Disculpe pero por su cancelacion a Delivery, se le descontara 15 puntos de buen cliente!")
+            print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
     elif estado_num=="4":
         rep["Pedidos_exitosos"]=exitosos_actuales+1
         puntos_actuales+=10
@@ -244,7 +247,8 @@ def gamificacion(id_pedido,estado_num):
             puntos_ganados_cli=int(total_factura/100)
 
             cli["Puntos_cli"]=puntos_cliente+puntos_ganados_cli
-            print(f"¡Felicitaciones haz ganado mas puntos que suman a tu reputacion de buen Cliente!")
+            print(f"\n¡Felicitaciones haz ganado mas puntos que suman a tu reputacion de buen Cliente!")
+            print("")
 
         cli["Rango"]=obtener_rango(cli["Puntos_cl"])
         
@@ -253,7 +257,9 @@ def ver_pedidos():
     try:
         cl_buscar=int(input().strip())
     except ValueError:
-        print("Error:El Id debe ser un numero entero.")
+        print("\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+        print("             Error:El Id debe ser un numero entero.")
+        print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
         return
     
     if cl_buscar in clientes:  
@@ -304,7 +310,7 @@ def ver_pedidos():
         if not tiene_pedidos:
             print("\n Registraste cuenta en el sistema, pero aun no realizaste ninguna compra/pedido")   
     else:
-        print("No se encontro el cliente en el sistema de Delivery")
+        print("\n¡¡¡No se encontro el cliente en el sistema de Delivery!!!")
         return
     
 def lista_repartidores():
@@ -378,7 +384,7 @@ def cuenta_repartidor():
             print(f"Ultima Reseña:{datos['Resena']}")
 
         else:
-            print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+            print("\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
             print("Error!.El Id ingresado no se encuentra en el sistema")
             print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
     elif c_op=="2":
@@ -391,19 +397,21 @@ def cuenta_repartidor():
                 return
         except ValueError:
             print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
-            print("Error:El ID ya esta en uso por otro repartidor.")
+            print("         Error:El Id no debe contener letras.")
             print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
             return         
         try:
             Edad = int(input("Ingrese la Edad (mientras sea mayor a 18 años): ").strip())
         except ValueError:
-            print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+            print("\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
             print("Error: Debe ingresar un número válido para la edad.")
             print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
             return
 
         if Edad<18:
+            print("\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
             print("¡Usted es un menor de edad, Nuestra politica NO ADMITE el trabajo para menores de 18 años!")
+            print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
         else:
             print("Ingrese nombre:")
             nom_r=input().strip()
@@ -487,8 +495,9 @@ def promos_horarios():
     print("-"*50)
 
 def Estadisticas_Rankings():
+    print("\n")
     print("="*52)
-    print("ESTADÍSTICAS GENERALES DEL SISTEMA")
+    print("                ESTADÍSTICAS GENERALES DEL SISTEMA          ")
 
     total_facturado = 0.0
     for p in pedidos.values():
@@ -498,7 +507,7 @@ def Estadisticas_Rankings():
     print(f"Total Facturado en Ventas (con envíos): ${total_facturado:.2f}")
     print("="*52)
     
-    print("\n RANKING GENERAL DE REPARTIDORES:")
+    print("\n               RANKING GENERAL DE REPARTIDORES             ")
     print("-"*52)
     for id_repartidor, stats in repartidores.items():
         nombre_rep= stats["Nombre"]
@@ -523,11 +532,11 @@ def Estadisticas_Rankings():
 def menu_repartidor()  :
     print("\n")
     print("-"*50)
-    print("♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦Menu del Delivery♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦")
-    print("                 1.Cuenta Personal")
-    print("                 2.Promos de Horarios")
-    print("                 3.Estadisticas y Rankings")
-    print("                 4. Salir")
+    print("---------------- Menu de Delivery ----------------")
+    print("                  1.Cuenta Personal")
+    print("                  2.Promos de Horarios")
+    print("                  3.Estadisticas y Rankings")
+    print("                  4. Salir")
     print("-"*50)
     op2=input("\nseleccione una opcion (1-4):").strip()
 
@@ -538,22 +547,29 @@ def menu_repartidor()  :
     elif op2=="3":
         Estadisticas_Rankings()
     elif op2=="4":
-        print("Volviendo a el menu anterior")
+        print("Volviendo a el menu anterior....")
     else:
+        print("\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
         print("Error!. Eleccion Fuera de Rango")
+        print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
     
 
 
 def registrar_pedido():
     global contador_id_pedido
-    print("\n¿Eres cliente de Delivery?\n1.Soy Cliente\n2.No soy cliente\n3.Volver al menu anterior")
-    cl_o=input("seleccione una opcion(1-3):").strip()
+    print("\n¿Eres cliente de Delivery?")
+    print("     1.Soy Cliente")
+    print("     2.No soy cliente")
+    print("     3.Volver al menu anterior")
+    cl_o=input("\nseleccione una opcion(1-3):").strip()
     if cl_o=="1":
         try:
-            print("Ingrese id de cliente")
+            print("\nIngrese id de cliente")
             id_cl=int(input().strip())
         except ValueError:
+            print("\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
             print("Error: el Id debe ser un entero")
+            print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
             return
 
     elif cl_o=="2":
@@ -561,23 +577,25 @@ def registrar_pedido():
         try:
             id_cln=int(input("Defina su numero de usuarios:").strip())
             if id_cln in clientes or id_cln<1000:
-                print("Error: Ese Id ya esta en uso por otro cliente o es id de repartidor")
+                print("¡¡¡Error: Ese Id ya esta en uso por otro cliente o es id de repartidor!!!!")
                 return
                 
         except ValueError:
+            print("\n!!!!!!!!!!!!!!!!!!!!")
             print("Numero de id invalido")
+            print("!!!!!!!!!!!!!!!!!!!!!")
             return         
         try:
             # Pedimos la edad como entero
             Ed_cl = int(input("Ingrese la Edad (mientras sea mayor a 18 años): ").strip())
         except ValueError:
-            print("Error: Debe ingresar un número válido para la edad.")
+            print("\n¡Error: Debe ingresar un número válido para la edad.!")
             return
         
         if Ed_cl<18:
-            print("Usted es menor de edad por lo tanto no podemos dejarle ser cliente")
+            print("\n¡Usted es menor de edad por lo tanto no podemos dejarle ser cliente¡")
             return
-        cliente = input("\nIngrese su nombre del cliente: ").strip().capitalize()
+        cliente = input("Ingrese su nombre del cliente: ").strip().capitalize()
 
         if cliente.replace(" ", "").isalpha() and cliente != "":
             doc=int(input("Ingrese numero de documenmto del cliente: "))
@@ -594,17 +612,21 @@ def registrar_pedido():
                 }
                 print(f"\n¡Cuenta creada con exito! Tu id de cliente es:{id_cln}")
             else:
-                print("Erros!!. Numero de documento no valido")
+                print("\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+                print("Error!!. Numero de documento no valido")
+                print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
         
         else:
-            print("Error: El nombre no puede contener números ni caracteres especiales.")
+            print("\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+            print("\nError!! El nombre no puede contener números ni caracteres especiales.")
+            print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
         
-        print("Volviendo al menu Delivery..")
+        print("\nVolviendo al menu Delivery...")
         return
 
        
     else:
-        print("Volviendo al menu Delivery..")
+        print("\nVolviendo al menu Delivery..")
         return
         
     
@@ -614,15 +636,15 @@ def registrar_pedido():
         descontados_dic = {}
         cliente=clientes[id_cl]["Nombre"]
 
-        print(f"\nBienvenido de vuelta {cliente}")
-        print("¿Que deseas encargar hoy al Equipo Delivery?")
+        print(f"                \nBienvenido de vuelta {cliente}")
+        print("            ¿Que deseas encargar hoy al Equipo Delivery?")
             
         while True:
-            nombre_prod = input("Nombre del producto (o '0' para terminar'): ").strip()
+            nombre_prod = input("               Nombre del producto (o '0' para terminar'): ").strip()
             if nombre_prod.lower() == '0':
                 break
             try:
-                precio_prod = float(input(f"Precio de '{nombre_prod}': $"))
+                precio_prod = float(input(f"                Precio de '{nombre_prod}': $"))
                 subtotal+=precio_prod
                 if productos_texto == "":
                     productos_texto=nombre_prod
@@ -631,16 +653,21 @@ def registrar_pedido():
                 
 
             except ValueError:
-                print("Error: Precio invalido. Producto no Agregado.")
-                
+                print("\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+                print("Error!!Precio invalido. Producto no Agregado.")
+                print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
             
         print("\nRegistrando pedido....")
             
         if subtotal==0.0:
-            print("\noperacion cancelada:no se agregaron productos.")
+            print("\n OPERACION CANCELADA:no se agregaron productos.")
 
-        print("\nZonas\n1.Resistencia\n2.Barranqueras\n3.Fontana\n4.Puerto Vilelas")
-        z_op=input("seleccione zona(1-4):").strip()
+        print("\n¿Cuál es tu Zona?")
+        print("         1.Resistencia")
+        print("         2.Barranqueras")
+        print("         3.Fontana")
+        print("         4.Puerto Vilelas")
+        z_op=input("\nseleccione zona(1-4):").strip()
 
         if z_op in zonas_opciones:
             zona_elegida=zonas_opciones[z_op]
@@ -656,8 +683,10 @@ def registrar_pedido():
         es_frecuente=(historial_clientes[cliente]==3)
         costo_envio=0.0 if es_frecuente else tabla_zonas[zona_elegida]
 
-        print("\n¿Desea un pedido Eco-Green?\n1. Sí\n2. No")
-        es_eco=(input("selecciones(1-2):").strip()=="1")
+        print("\n           ¿Desea un pedido Eco-Green?")
+        print("                   1.Sí, Me encantaria")
+        print("                   2.No Por el momento")
+        es_eco=(input("\nselecciones(1-2):").strip()=="1")
 
         descuento_eco=0.10 if es_eco else 0.0
 
@@ -742,18 +771,28 @@ def registrar_pedido():
                 distancia_final=distancia_sistema[nombre_rep]
 
                 
-            print("\n¿Como desea pagar?\n1.tarjeta de credito\n2.tarjeta de debito\n3.Transferencia/efectivo")
+            print("\n               ¿Como desea pagar?")
+            print("                 1.tarjeta de credito")
+            print("                 2.tarjeta de debito")
+            print("                 3.Transferencia/efectivo")
             f_pago=input("seleccione una opcion (1-3):").strip()
 
             if f_pago in forma_pago:
                 forma_pago[f_pago]+=1
                 if f_pago!="3":
-                    print("\nIngrese nombre de su tarjeta\n1.master card\n2.visa\n3.mercado pago\n4.cabal\n5.naranja\n6.bna\n7.bch")
+                    print("\nIngrese nombre de su tarjeta")
+                    print("         1.master card")
+                    print("         2.visa")
+                    print("         3.mercado pago")
+                    print("         4.cabal")
+                    print("         5.naranja")
+                    print("         6.bna")
+                    print("         7.bch")
                     marca_tarj=input().strip()
 
                     if marca_tarj in tarjetas:
-                        print("\n¿En cuantas cuotas desea pagar?")
-                        cuo=input("ingrese la cantidad de cuotas (1-12):").strip()
+                        print("\n           ¿En cuantas cuotas desea pagar?")
+                        cuo=input("    ingrese la cantidad de cuotas (1-12):").strip()
                         if cuo in cuotas:
                             total_final=total_final-(total_final)*cuotas[cuo]
         
@@ -798,12 +837,16 @@ def registrar_pedido():
                             }
                             contador_id_pedido+=1
                         else:
+                            print("\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
                             print("Error!,la cantidad de cuotas se excedio el tope(1-12)")
+                            print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
                     else:
-                        print("Error!.La tarjeta ingresada no esta asociada al sistema de modo de pago")
+                        print("¡¡¡Error!.La tarjeta ingresada no esta asociada al sistema de modo de pago!!!")
                         
                 else:
-                    print("usted desea pagar en:\n1.Transferencia\n2.Efectivo")
+                    print("         usted desea pagar en:")
+                    print("            1.Transferencia")
+                    print("            2.Efectivo")
                     tipo_p=int(input())
 
                     premio_mundial = "Ninguno"
@@ -813,7 +856,11 @@ def registrar_pedido():
                         premio_mundial = "Llavero de Messi"
 
                     if tipo_p==1:
-                        print("¿Que billetera virtual desea usar?\n1.Meracdo Pago\n2.Uala\n3.Personal Pay\n4.Naranja X")
+                        print("         ¿Que billetera virtual desea usar?")
+                        print("             1.Meracdo Pago")
+                        print("             2.Uala")
+                        print("             3.Personal Pay")
+                        print("             4.Naranja X")
                         billetera=input().strip()
                 
                         if billetera in b_virtual:
@@ -850,15 +897,15 @@ def registrar_pedido():
                                 }
                             contador_id_pedido+=1
                         else:
-                            print("Error!.billetera virtual no aceptada")
+                            print("     ¡¡¡Error!.billetera virtual no aceptada!!!")
                     else:
                         print(f"\n¡PEDIDO #{contador_id_pedido} REGISTRADO!")
                         if premio_mundial != "Ninguno":
-                            print(f"¡Te llevas un {premio_mundial} de regalo!")
+                            print(f"        ¡Te llevas un {premio_mundial} de regalo!")
 
-                        print(f"Total a pagar ${total_final:.2f}")
+                        print(f"            Total a pagar ${total_final:.2f}")
                         tiempo_est=calcular_tiempo_entrega(distancia_final) 
-                        print(f"tiempo estimado en llegar su pedido {tiempo_est}minutos")
+                        print(f"            tiempo estimado en llegar su pedido {tiempo_est}minutos")
                             
                         fecha_dia = fecha_actual.strftime("%d/%m/%y")
                         pedidos[contador_id_pedido] = {
@@ -884,18 +931,20 @@ def registrar_pedido():
                         contador_id_pedido+=1 
 
             else:
-                print("Error!, su eleccion no esta dentro de las opciones")
+                print("\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+                print("     ¡¡¡Error, su eleccion no esta dentro de las opciones!!!")
+                print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
         else:
-            print("Compra No realizada!!")
+            print("             Compra No realizada!!")
         
           
     else:
-        print("Error!. El cliente no es parte de Delivery")
+        print("        ¡¡¡Error!. El cliente no es parte de Delivery!!!")
         return
 
 def cambio_estado():
     if not pedidos:
-        print("no hay pedidos para modificar")
+        print("     ¡No hay pedidos para modificar!")
         return
     try:
         id_buscar=int(input("Numero de compra:"))
@@ -937,23 +986,26 @@ def cambio_estado():
 
         else:
 
-            print("No existe esa compra")
+            print("         ¡¡¡No existe esa compra!!!")
                 
     except ValueError:
-        print("Numero de compra Invalido")   
+        print("\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+        print("Error!!!Numero de compra Invalido")   
+        print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
 
 
 def menu_cliente():
     global contador_id_pedido 
     global pedidos 
     
-    print("\n--- Menu del Delivery ---")
-    print("1. Registrar nuevo pedido")
-    print("2. Historial de pedidos")
-    print("3. Cambiar estado de un pedido")
-    print("4. Salir")
+    print("\n---------------- Menu de Delivery -----------------")
+    print("             1. Registrar nuevo pedido")
+    print("             2. Historial de pedidos")
+    print("             3. Cambiar estado de un pedido")
+    print("             4. Salir")
+    print("-"*50)
 
-    opcion = input("Seleccione una opcion (1-4): ").strip()
+    opcion = input("\nSeleccione una opcion (1-4): ").strip()
 
     if opcion == "1":
         registrar_pedido()
@@ -970,7 +1022,7 @@ def ejecutar_inicio():
     while True:
         print("\n")
         print("-"*50)
-        print("♦♦♦♦♦♦♦♦♦♦Bienvenido a Sistema Delivery♦♦♦♦♦♦♦♦♦♦")
+        print("♦♦♦♦♦♦♦♦♦♦ Bienvenido a Sistema Delivery ♦♦♦♦♦♦♦♦♦♦")
         print("             1. Menu de cliente")
         print("             2. Menu de Repartidor")
         print("             3. Cerrar sesion")
