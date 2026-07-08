@@ -15,6 +15,7 @@ dias_semana={
     5:"Sabado",
     6:"Domingo"
 }
+
 repartidores={
     101:{"Nombre":"Juan","Edad":25,"Categoria":"ORO","Puntos":22500,"Vehiculo":"Moto","Pedidos_exitosos": 12, "Pedidos_cancelados": 1,"Ganancias_viajes": 6000.0, "Propinas": 450.0, "Resena": "Muy rápido"},
     105:{"Nombre":"Ana","Edad":30,"Categoria":"PLATA","Puntos":550,"Vehiculo":"Bici(Eco)","Pedidos_exitosos": 5, "Pedidos_cancelados":0 ,"Ganancias_viajes": 600.0, "Propinas": 45.0, "Resena": "Rápido"},
@@ -468,7 +469,7 @@ def cuenta_repartidor():
         print("Error!.Su eleccion no esta dentro de la opciones permitidas") 
 
 def promos_horarios():
-    
+
     print("\n")
     config_promos={
         "Almuerzo":"+300 por viaje y +5 puntos extra",
@@ -632,7 +633,6 @@ def transaccion(id_c):
         if id_c in clientes:    
             subtotal=0.0
             productos_texto=""
-            descontados_dic = {}
             cliente=clientes[id_c]["Nombre"]
 
             print(f"\n       **Bienvenido de vuelta {cliente}**")
@@ -684,9 +684,23 @@ def transaccion(id_c):
                             print("\n           ¿Desea un pedido Eco-Green?")
                             print("               1.Sí, Me encantaria")
                             print("               2.No Por el momento")
-                            es_eco=int(input("\n               selecciones(1-2):").strip())
+                            es_eco = False  
 
-                            if es_eco==1 or es_eco==2:
+                            
+                            try:
+                                opcion_eco = int(input("\n               selecciones(1-2): ").strip())
+                                if opcion_eco == 1:
+                                    es_eco = True
+                                    break
+                                elif opcion_eco == 2:
+                                    es_eco = False
+                                    break
+                                else:
+                                    print("  Error: Debe seleccionar únicamente 1 o 2.")
+                            except ValueError:
+                                print("  Entrada inválida. Por favor, ingrese un número (1 o 2).")
+
+                            if es_eco or not es_eco:
 
                                 descuento_eco=0.10 if es_eco else 0.0
 
@@ -702,8 +716,8 @@ def transaccion(id_c):
                                     print("\ndesea saber sobre la promo del dia dew hoy?\n1.Sí\n2.No")
                                     p_op=input().strip()
                                     if p_op=="1":
-                                        if nombre_dia=="Jueves":
-                                            print("\n-------DESCUENTOS QUE ALEGRAN TU JUEVES!!------")
+                                        if nombre_dia=="Jueves" or nombre_dia=="Martes":
+                                            print("\n-------DESCUENTOS QUE ALEGRAN TU DÍA!!------")
                                             print("Jueves de promocion, con descuentos del 15%")
                                             print("\n¿Desea aplicar el descuento?\n1.Sí\n2.No")
                                             des=input().strip()
@@ -843,6 +857,7 @@ def transaccion(id_c):
                                                                         "tiempo_estimado":tiempo_est
                                                                     }
                                                                     contador_id_pedido+=1
+                                                                    return
                                                                 else:
                                                                     print("\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
                                                                     print("Error!,la cantidad de cuotas se excedio el tope(1-12)")
@@ -905,6 +920,7 @@ def transaccion(id_c):
                                                                         "tiempo_estimado":tiempo_est
                                                                         }
                                                                     contador_id_pedido+=1
+                                                                    return
                                                                 else:
                                                                     print("     ¡¡¡Error!.billetera virtual no aceptada!!!")
                                                                     
@@ -945,6 +961,7 @@ def transaccion(id_c):
                                                                 "tiempo_estimado":tiempo_est
                                                                 }
                                                             contador_id_pedido+=1 
+                                                            return
 
                                             else:
                                                 print("\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
@@ -956,8 +973,7 @@ def transaccion(id_c):
                                         return
                                     else:
                                         print("\n                   Ingrese una opcion Valida")
-                            else:
-                                ("\n             Ingrese una opcion Permitida")
+                            
                                 
                             
                     else:
