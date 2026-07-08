@@ -1009,12 +1009,12 @@ def cambio_estado():
                         print("\nEstados:\n1.Pendiente\n2.En preparacion\n3.En camino\n4.Entregado \n5.Cancelado")
                         nuevo_est=input("seleccione nuevo estado (1-5):").strip()
 
-                        if actualizar_estado(id_buscar,nuevo_est):
-                                
+                        if actualizar_estado(id_buscar,nuevo_est):    
                             gamificacion(id_buscar,nuevo_est)
+                             return
 
                     else:
-                        print("¡¡Error!! Usted no tiene un pedido con ese id de compra")
+                        print("¡¡Error!! No existe un cliente con ese Id")
                         return
             else:
                 print("         ¡¡¡No existe esa compra!!!")
