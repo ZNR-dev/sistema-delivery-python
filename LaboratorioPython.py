@@ -490,7 +490,7 @@ def promos_horarios():
     print(f"-11:00 a 14:00[Almuerzo]: {config_promos['Almuerzo']}")
     print(f"-19:00 a 23:00[Cena Peak]: {config_promos['Cena Peak']}")
     print(f"-00:00 a 04:00[Trasnocheros]: {config_promos['Trasnocheros']}")
-
+    #Se utiliza un condicional para determinar si se esta en hora de promocion para realizar trabajo de repartidor
     if 11<=hora_actual<14:
         print("Estas en horario e promo![Turno Almuerzo]")
         print(f"Beneficio activo en tus viajes: {config_promos['Almuerzo']}")
@@ -524,6 +524,8 @@ def Estadisticas_Rankings():
     
     print("\n               RANKING GENERAL DE REPARTIDORES             ")
     print("-"*52)
+     #mediante una extructura manejado por contador se van a ir mostrando las posiciones de los repartidores
+     #segun categoria
     for id_repartidor, stats in repartidores.items():
         nombre_rep= stats["Nombre"]
 
@@ -572,6 +574,7 @@ def menu_repartidor():
             print("\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
             print("Error!. Eleccion Fuera de Rango")
             print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+         
     
 def cuenta_cliente():
         print("\n----------------Vamos a crear tu cuenta--------------")
@@ -603,9 +606,9 @@ def cuenta_cliente():
 
         if cliente.replace(" ", "").isalpha() and cliente != "":
             doc=int(input("Ingrese numero de documenmto del cliente: "))
-
+            #se utilizo un numero de documento inventado de la persona mas anciada de argentina para comparar
             if doc>3125407:
-                
+                #se almacena la informacion del cliente en el diccionario de clientes
                 clientes[id_cln]={
                     "Nombre":cliente,
                     "Edad":Ed_cl,
@@ -628,8 +631,10 @@ def cuenta_cliente():
         print("\nVolviendo al menu Delivery...")
         return
 
+
 def transaccion(id_c):
     global contador_id_pedido
+    #Verificacion de la existencia de cliente en el sistema
     if id_c in clientes:    
         subtotal = 0.0
         productos_texto = ""
@@ -638,7 +643,7 @@ def transaccion(id_c):
         print(f"\n      **Bienvenido de vuelta {cliente}**")
         print("¿Qué deseas encargar hoy al Equipo Delivery?")
                 
-        # 1. Bucle de carga de productos
+        # Bucle de carga de productos
         while True:
             nombre_prod = input("Nombre del producto (o '0' para terminar'): ").strip()
             if nombre_prod.lower() == '0':
@@ -661,7 +666,7 @@ def transaccion(id_c):
         
         print("\n           Registrando pedido....")
         
-        # 2. Menú de Zonas (Validado sin listas)
+        # Menú de Zonas (Validado sin listas)
         while True:
             print("\n           ¿Cuál es tu Zona?")
             print("               1.Resistencia")
@@ -686,7 +691,7 @@ def transaccion(id_c):
             es_frecuente = (historial_clientes[cliente] == 3)
             costo_envio = 0.0 if es_frecuente else tabla_zonas[zona_elegida]
 
-        # 3. Menú Eco-Green
+        # Menú Eco-Green
         while True:
             print("\n           ¿Desea un pedido Eco-Green?")
             print("               1.Sí, Me encantaria")
@@ -711,7 +716,7 @@ def transaccion(id_c):
         numero_dia = datetime.now().weekday()
         nombre_dia = dias_semana[numero_dia]
 
-        # 4. Lógica de Promociones del Día (Corregida e indentada)
+        #Promociones del Día
         if nombre_dia in promos_dia:
             print("\n---------¡¡¡HOY ES DIA DE PROMOS!!!--------")
             print(f"\n¿Desea saber sobre la promo del día de hoy ({nombre_dia})?\n1.Sí\n2.No")
@@ -737,15 +742,16 @@ def transaccion(id_c):
                         total_final = total_final - (subtotal * descuento_promo)
                         print("\nDescuento aplicado con éxito!!")    
 
-        # 5. Cálculo de Regalos/Premios Mundiales
+        # Cálculo de Regalos/Premios Mundiales
         premio_mundial = "Ninguno"
         if total_final > 15000:
             premio_mundial = "Llavero de Tim Payne"
         elif total_final > 10000:
             premio_mundial = "Llavero de Messi"
                         
-        # 6. Mostrar Resumen de Compra en Pantalla
-        print("\n" + " " * 16 + "RESUMEN DE COMPRA" + " " * 14)
+        # Mostrar Resumen de Compra en Pantalla
+        print("\n")
+        print("               RESUMEN DE COMPRA           ")
         print(f"N°: {contador_id_pedido}")
         print("-" * 50)  
         print(f"Cliente: {cliente}")
@@ -761,7 +767,7 @@ def transaccion(id_c):
                         
         print(f"\nTOTAL A PAGAR: ${total_final:.2f}")
 
-        # 7. Confirmación de Pago
+        # Confirmación de Pago
         while True:
             print("-" * 50)
             print("\n             Desea seguir con el pago?")
@@ -777,7 +783,7 @@ def transaccion(id_c):
             print("             ¡¡¡Pago Cancelado!!!")
             return
 
-        # 8. Asignación de Repartidores
+        # Asignación de Repartidores
         if es_frecuente:
             historial_clientes[cliente] = 0
 
@@ -788,7 +794,7 @@ def transaccion(id_c):
             rep_op = int(ent_usu)
         else:
             rep_op = 101
-
+        #busqueda del id de repartidor elegido por el cliente en el sistema
         if rep_op in repartidores:
             id_repartidor_elegido = rep_op
             nombre_rep = repartidores[rep_op]["Nombre"]
@@ -798,7 +804,7 @@ def transaccion(id_c):
             nombre_rep = repartidores[101]["Nombre"]
             distancia_final = distancia_sistema[nombre_rep]
 
-        # 9. Método de Pago (Validado sin listas)
+        # Método de Pago
         while True:    
             print("\n               ¿Cómo desea pagar?")
             print("                 1.tarjeta de credito")
@@ -814,6 +820,7 @@ def transaccion(id_c):
         # Flujo de Tarjetas (Crédito / Débito)
         if f_pago == "1" or f_pago == "2":
             while True:
+                #Opciones de tarjetas Asociadas al sistema
                 print("\n               Ingrese nombre de su tarjeta")
                 print("                    1.master card")
                 print("                    2.visa")
@@ -832,7 +839,7 @@ def transaccion(id_c):
             while True:
                 print("\n           ¿En cuántas cuotas desea pagar?")
                 cuo = input("         Ingrese la cantidad de cuotas (1-12):").strip()
-                # Validación manual segura de cuotas sin listas
+                # Validación manual segura de cuotas
                 if cuo == "1" or cuo == "2" or cuo == "3" or cuo == "4" or cuo == "5" or cuo == "6" or cuo == "7" or cuo == "8" or cuo == "9" or cuo == "10" or cuo == "11" or cuo == "12":
                     break
                 else:
@@ -848,9 +855,9 @@ def transaccion(id_c):
             tarjeta_final = tarjetas[marca_tarj]
             tip_transf_final = ""
             cant_cuo_final = cuo
-
-        # Flujo de Transferencia / Efectivo
+         
         else: 
+              # Flujo de Transferencia / Efectivo
             while True:
                 print("         usted desea pagar en:")
                 print("            1.Transferencia")
@@ -862,6 +869,7 @@ def transaccion(id_c):
                     print("     Ingrese una opción válida por favor")
 
             if tipo_p == "1":
+                 #Billeteras virtuales Asociadas al sistema
                 while True:
                     print("         ¿Qué billetera virtual desea usar?")
                     print("             1.Mercado Pago")
@@ -890,7 +898,7 @@ def transaccion(id_c):
         elif total_final > 10000:
             premio_mundial = "Llavero de Messi"
 
-        # 10. Impresión de Confirmación y Guardado de Datos
+        # Impresión de Confirmación y Guardado de Datos
         print(f"\n¡PEDIDO #{contador_id_pedido} REGISTRADO!")
         if premio_mundial != "Ninguno":
             print(f"¡Te llevas un {premio_mundial} de regalo!")
@@ -920,6 +928,7 @@ def transaccion(id_c):
             "total": total_final,
             "tiempo_estimado": tiempo_est
         }
+        #Aumenta el id de pedido para la siguiente compra
         contador_id_pedido += 1
         return
 
@@ -956,18 +965,19 @@ def registrar_pedido():
     
   
 def cambio_estado():
+    #El usuario no ha realizado ningun pedido aun
     if not pedidos:
         print("     ¡No hay pedidos para modificar!")
         return
     try:
         while True:
             id_buscar=int(input("Numero de compra :"))
-
+            #Busqueda de id de compra para buscar dicho pedido
             if id_buscar in pedidos:
                 while True:
                     print("Ingrese su id de cliente:")
-                    id=int(input()).strip()
-
+                    id=int(input().strip())
+                    #Busqueda de cliente al que pertenece dicho pedido para dar autorizacion de cambio de estado
                     if id in clientes:
                         print("\n")
                         print("-"*70)
