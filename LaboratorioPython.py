@@ -1,11 +1,18 @@
+#FUNCIONES EXTERNAS QUE FUERON IMPORTADAS
+#Funcion para ocupar fecha y hora 
 from datetime import datetime
+#Funcion para obtener algo aleatorio, se usa el "azar"
 import random
- 
+
+#Diccionarios vacios para pedidos e historial de cliente
+#Contador de pedidos con ID unico, se obtiene fecha actual
 pedidos = {}  
 contador_id_pedido = 1
 historial_clientes = {}  
 fecha_actual = datetime.today() 
 
+#DICCIONARIOS (estructuras para guardar datos en el siguiente formado: Diccionario ("clave")=valor
+#Dias de la semana
 dias_semana={
     0:"Lunes",
     1:"Martes",
@@ -15,13 +22,14 @@ dias_semana={
     5:"Sabado",
     6:"Domingo"
 }
-
+#Repartidores de ejemplo
 repartidores={
     101:{"Nombre":"Juan","Edad":25,"Categoria":"ORO","Puntos":22500,"Vehiculo":"Moto","Pedidos_exitosos": 12, "Pedidos_cancelados": 1,"Ganancias_viajes": 6000.0, "Propinas": 450.0, "Resena": "Muy rápido"},
     105:{"Nombre":"Ana","Edad":30,"Categoria":"PLATA","Puntos":550,"Vehiculo":"Bici(Eco)","Pedidos_exitosos": 5, "Pedidos_cancelados":0 ,"Ganancias_viajes": 600.0, "Propinas": 45.0, "Resena": "Rápido"},
     105:{"Nombre":"Maria","Edad":45,"Categoria":"BRONCE","Puntos":100,"Vehiculo":"Bici(Eco)","Pedidos_exitosos": 4, "Pedidos_cancelados":1 ,"Ganancias_viajes": 456.0, "Propinas": 40.0, "Resena": "Amable"},
     
 }
+#Clientes de ejemplo
 clientes={
     2500:{"Nombre":"Maria","Edad":"27","Documento":"27899234","Cant_compras":0,"Puntos_cl":440,"Rango":"PLATA"},
     4044:{"Nombre":"Juan","Edad":"34","Documento":"36489560","Cant_compras":0,"Puntos_cl":100,"Rango":"BRONCE"},
@@ -32,13 +40,14 @@ clientes={
     2020:{"Nombre":"Juan","Edad":"51","Documento":"25543788","Cant_compras":0,"Puntos_cl":200,"Rango":"PLATA"},
     
 }
+#Opciones de zonas disponibles
 zonas_opciones = {
     "1": "Resistencia",
     "2": "Barranqueras",
     "3": "Fontana",
     "4": "Puerto Vilelas"
 }
-
+#Cuotas para la forma de pago credito
 cuotas={
     "1":0.0,
     "2":0.50,
@@ -53,31 +62,34 @@ cuotas={
     "11":0.910,
     "12":0.840
 }
-
+#Formas de pago
 forma_pago={
     "1":0,
     "2":0,
     "3":0
 }
-
+#Precio para cada zona (un minimo)
 tabla_zonas = {
     "Resistencia": 1000.0,
     "Barranqueras": 2000.0,
     "Fontana":3500.0,
     "Puerto Vilelas":4000.0
 }
+#Dias donde hay promo
 promos_dia={
     "Jueves":"promo",
     "Sabado":"promo",
     "Domingo":"promo",
     "Miercoles":"promo"
 }
+#Vehiculos disponibles
 vehiculos={
     "1":"Moto",
     "2":"Bici (Eco)",
     "3":"Auto",
     "4":"Ninguno"
 }
+#Estado del pedido
 Estado={
     "1":"Pendiente",
     "2":"En preparacion",
@@ -85,6 +97,7 @@ Estado={
     "4":"Entregado",
     "5":"Cancelado"
 }
+#Opiones de tarjeta
 tarjetas={
     "1":"Mastercad",
     "2":"Visa",
@@ -95,6 +108,7 @@ tarjetas={
     "7":"Banco del Chaco"
 
 }
+#Opciones de billetera virtual
 b_virtual={
     "1":"Mercado pago",
     "2":"Uola",
@@ -102,20 +116,21 @@ b_virtual={
     "4":"Naranja x"
 }
 
-
+#FUNCIONES 
+#Dar una categoria al Repartidor
 def obtener_categoria_texto(puntos):
     if puntos > 750: return "ORO"
     if puntos >= 500: return "PLATA"
     return "BRONCE"
-
+#Dar una categoria al Cliente
 def obtener_rango(puntos_cli):
     if puntos_cli>=500: return "ORO"
     elif puntos_cli>=200:return "PLATA"
     return"BRONCE"
-
+#Calcular tiempo estimado de entrega
 def calcular_tiempo_entrega(distancia_repartidor):
     return 5+int(distancia_repartidor*4)
-
+#Actualiza el estado del pedido
 def actualizar_estado(id_pedido,nuevo_estado):
     pedido=pedidos[id_pedido]
 
@@ -135,7 +150,7 @@ def actualizar_estado(id_pedido,nuevo_estado):
         print("         Error! opcion de estado invalida.")
         print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
 
-
+#Actualiza stock en base al pedido, actualiza al cliente y repartidor
 def gamificacion(id_pedido,estado_num):
     pedido=pedidos[id_pedido]
 
@@ -252,7 +267,7 @@ def gamificacion(id_pedido,estado_num):
             print("")
 
         cli["Rango"]=obtener_rango(cli["Puntos_cl"])
-        
+#Muetra los pedidos por pantalla        
 def ver_pedidos():
     print("Ingrese su id de cliente para ver su historial")
     try:
@@ -313,7 +328,7 @@ def ver_pedidos():
     else:
         print("\n¡¡¡No se encontro el cliente en el sistema de Delivery!!!")
         return
-    
+#Muestra los repartidores disponibles    
 def lista_repartidores():
     print("\n")
     print("---------------------------------------------------------------")
@@ -351,7 +366,7 @@ def lista_repartidores():
         print("-" * 75)
         
     return distancias
-
+#Inicia sesion si es repartidor, en caso de no ser repartidor, puede crear una cuenta (registrarse)
 def cuenta_repartidor():
     print("\n¿Queres ser parte de este grupo de Deliverys?")
     print("             1. Ya soy parte")
@@ -467,7 +482,7 @@ def cuenta_repartidor():
         print("Volviendo al menu anterior.")
     else:
         print("Error!.Su eleccion no esta dentro de la opciones permitidas") 
-
+#Bonificaciones x viaje segun un intervalo de horas para los distintos horarios (beneficio aplicado a los repartidores)
 def promos_horarios():
 
     print("\n")
@@ -508,7 +523,7 @@ def promos_horarios():
 
     input("\n[Pausa]Presione Entre para regresar al menú...")
     
-
+#Ranking de repartidores 
 def Estadisticas_Rankings():
     print("\n")
     print("="*52)
@@ -546,7 +561,7 @@ def Estadisticas_Rankings():
         print("-" * 52)
     input("\n[Pausa]Presione Entre para regresar al menú")
 
-
+#Muetra el menu del repartidor una vez iniciada una cuenta
 def menu_repartidor():
     while True:
         print("\n")
@@ -575,7 +590,7 @@ def menu_repartidor():
             print("Error!. Eleccion Fuera de Rango")
             print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
          
-    
+#Crea una cuenta para el cliente    
 def cuenta_cliente():
         print("\n----------------Vamos a crear tu cuenta--------------")
         try:
@@ -631,7 +646,7 @@ def cuenta_cliente():
         print("\nVolviendo al menu Delivery...")
         return
 
-
+#Aqui se procesa la transaccion del pedido
 def transaccion(id_c):
     global contador_id_pedido
     #Verificacion de la existencia de cliente en el sistema
@@ -935,7 +950,7 @@ def transaccion(id_c):
     else:
         print("\n ¡¡¡Error!. El cliente no es parte de Delivery!!!")
         return
-
+#Registrar un pedido, si es cliente inicia sesion con ID unico, sino, se crea una cuenta de cliente
 def registrar_pedido():
     while True:
         print("\n       ¿Eres cliente de Delivery?")
@@ -963,7 +978,7 @@ def registrar_pedido():
             print("\n       Error!!.Opcion no permitida")    
             
     
-  
+#Aqui se cambia el estado de un pedido que se haya hecho
 def cambio_estado():
     #El usuario no ha realizado ningun pedido aun
     if not pedidos:
@@ -1025,7 +1040,7 @@ def cambio_estado():
         print("Error!!!Numero de compra Invalido")   
         print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
 
-
+#Muestra el menu para el Cliente, donde se puede registrar un pedido, ver pedidos o cambiar un estado a algun pedido
 def menu_cliente():
     while True:
         global contador_id_pedido 
@@ -1051,7 +1066,7 @@ def menu_cliente():
             break
         else:
             print("[Error] Opcion invalida. Intente de nuevo.")
-
+#Ejecuta el menu de inicio para luego ejecutar las funciones anteriormente mencionadas
 def ejecutar_inicio():
     while True:
         print("\n")
