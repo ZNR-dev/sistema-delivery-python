@@ -150,7 +150,7 @@ def actualizar_estado(id_pedido,nuevo_estado):
         print("         Error! opcion de estado invalida.")
         print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
 
-#Actualiza stock en base al pedido, actualiza al cliente y repartidor
+#Debido al estado del pedido, se actualiza al loa puntos y/o rango de cliente y de repartidor
 def gamificacion(id_pedido,estado_num):
     pedido=pedidos[id_pedido]
 
@@ -200,7 +200,7 @@ def gamificacion(id_pedido,estado_num):
     puntos_actuales = rep.get("Puntos", 0)
     ganancias_actuales = rep.get("Ganancias_viajes", 0.0)
     propinas_actuales = rep.get("Propinas", 0.0)
-
+    #Se evalua el estado de entrega elegido y dependiendo de eso se Penaliza o se suman puntos extras (cliente y repartidor)
     if estado_num=="5":
         rep["Pedidos_cancelados"]=cancelados_actuales+1
         
@@ -267,8 +267,10 @@ def gamificacion(id_pedido,estado_num):
             print("")
 
         cli["Rango"]=obtener_rango(cli["Puntos_cl"])
+        
 #Muetra los pedidos por pantalla        
 def ver_pedidos():
+    #se solicita id de cliente para ver los pedidos del mismo
     print("Ingrese su id de cliente para ver su historial")
     try:
         cl_buscar=int(input().strip())
@@ -277,7 +279,7 @@ def ver_pedidos():
         print("             Error:El Id debe ser un numero entero.")
         print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
         return
-    
+    #se verifica q exista en el sistema oara mostrar su historial de compras
     if cl_buscar in clientes:  
         datos_cliente=clientes[cl_buscar]
 
@@ -292,7 +294,7 @@ def ver_pedidos():
 
         tiene_pedidos=False
 
-
+        #con un bucle manejado por contador se se muestran las distintas compras
         for id_p, p in pedidos.items():
             if p.get('cliente')==datos_cliente['Nombre']:
                 tiene_pedidos=True
@@ -313,6 +315,7 @@ def ver_pedidos():
                 print("DETALLES DE ENTREGA/PAGO")
                 print(f"Tarjeta:{p.get('tarjeta','No especificado')} ")
                 print(f"Cantidad de cuotas:{p.get('cant_cuo',0)}")
+                #Se muestra que gano un premio segun la verificacion del condicional
                 if p.get("regalo")!="Ninguno":
                     print(f"Premio mundial:{p['regalo']}")
                 if p.get("tip_transf")!="":
@@ -328,13 +331,14 @@ def ver_pedidos():
     else:
         print("\n¡¡¡No se encontro el cliente en el sistema de Delivery!!!")
         return
+        
 #Muestra los repartidores disponibles    
 def lista_repartidores():
     print("\n")
     print("---------------------------------------------------------------")
     print("=== Repartidores Disponibles (Con distancia en tiempo Real) ===")
     print("---------------------------------------------------------------")
-
+    
     distancias = {}
     
     for id_rep, stats in repartidores.items():
@@ -347,13 +351,13 @@ def lista_repartidores():
         if distancias[k] < distancia_minima:
             distancia_minima = distancias[k]
             repartidor_mas_cercano = k
-
+    #Para mostrar los distintos repartidores en un determinado fomato se utilizo un bucle manejado por contador
     for id_repartidor, stats in repartidores.items():
         nombre_rep = stats["Nombre"]
         puntos_rep = stats.get("Puntos", 0) 
         exitosos_rep=stats.get('pedidos_exitosos',0)
         cancelados_rep=stats.get('pedidos_cancelados',0)
-
+        #Se obtine la categoria del repartidor deacuerdo a sus puntajes
         cat = obtener_categoria_texto(puntos_rep)
         
         dist = distancias[nombre_rep] 
@@ -411,12 +415,13 @@ def cuenta_repartidor():
         print("\n---------- ¡Crea tu Cuenta Ya! ----------")
         try:
             id_nuevo=int(input("Defina su numero de usuarios(de hasta 3 digitos):").strip())
+            #Se usa un condicional para verificar que el id sea menor a 1000 q tiene 4digitos
             if id_nuevo>1000:
                 print("\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
                 print("¡¡¡Error. El id definido esta rfeservado para clientes")
                 print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
                 return
-
+            #Se verifica que el id elegido no se haya usado ya por otro usuario
             if id_nuevo in repartidores:
                 print("Error: Ese Id ya esta en uso por otro repartidor")
                 return
@@ -432,7 +437,7 @@ def cuenta_repartidor():
             print("Error: Debe ingresar un número válido para la edad.")
             print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
             return
-
+        #Se usa un condicional para verificar que el usuario sea mayor de edad
         if Edad<18:
             print("\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
             print("¡Usted es un menor de edad, Nuestra politica NO ADMITE el trabajo para menores de 18 años!")
@@ -447,7 +452,7 @@ def cuenta_repartidor():
             print("             3.Auto")
             print("             4.Ninguno")
             vehi=input("\nseleccione una opcion(1-4):").strip()
-
+            #Se guarda la informacion en el diccionario para el nuevo usuario
             repartidores[id_nuevo]={
                 "Nombre":nom_r,
                 "Edad": Edad,
@@ -491,7 +496,7 @@ def promos_horarios():
         "Cena Peak":"+$500 por viaje y multiplicador de puntos x2",
         "Trasnocheros":"$700 por viaje (Bono nocturno por seguridad)"
     }
-
+    #Se utilizaron variables para guardar determinados datos de las funciones externas 
     hora_actual=datetime.now().hour
     minutos_actuales=datetime.now().minute
 
