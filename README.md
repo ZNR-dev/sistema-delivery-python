@@ -9,6 +9,8 @@
 
 **Comision:** 1.4
 
+**Grupo:** D7
+
 ---
 
 ## Integrantes
